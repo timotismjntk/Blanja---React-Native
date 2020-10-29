@@ -4,7 +4,7 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 
 import Logo from '../assets/blanja.png';
 
-export default function Loading() {
+export default function SplashScreen() {
   return (
     <View style={styles.parent}>
       <Image source={Logo} style={styles.logo} />

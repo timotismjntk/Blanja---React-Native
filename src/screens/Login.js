@@ -38,16 +38,11 @@ export default function Loading(props) {
             password,
         };
         console.log(result);
-        props.navigation.navigate('Loading');
+        props.navigation.navigate('Home');
     };
 
   return (
     <View style={styles.parent}>
-        <View style={styles.navigation}>
-            <TouchableOpacity>
-                <Icon name="chevron-left" size={40} />
-            </TouchableOpacity>
-        </View>
         <View>
             <Text style={styles.headerSignUp}>Login</Text>
         </View>
