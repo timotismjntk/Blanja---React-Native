@@ -13,7 +13,7 @@ import Checkout from '../screens/Checkout';
 import ProductDetail from '../screens/ProductDetail';
 import Address from '../screens/Address';
 import ChangeAddress from '../screens/ChangeAddress';
-import SplashScreen from '../screens/SplashScreen';
+import SplashScreen from 'react-native-splash-screen'
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -32,7 +32,7 @@ const Main = (props) => {
   const {isLogin} = LoginState;
 
   useEffect(() => {
-    // SplashScreen.hide();
+    SplashScreen.hide();
 }, []);
 
   return (
