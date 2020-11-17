@@ -1,41 +1,49 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {View, Platform, ScrollView, StatusBar, Alert, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {
+    View,
+    Platform,
+    ScrollView,
+    StatusBar,
+    Alert,
+    Text,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {Thumbnail} from 'native-base';
+import ImagePicker from 'react-native-image-picker';
 import {store, persistor} from '../redux/store';
-
-// import image
-import profile from '../assets/profile.png';
 
 // import actions
 import profileAction from '../redux/actions/profile';
 import logOutAction from '../redux/actions/auth';
-import rootReducer from '../redux/reducers/index';
 
 // import env
 import {API_URL} from '@env';
-import { persistStore } from 'redux-persist';
+
 export default function Myprofile(props) {
     const dispatch = useDispatch();
+    const [items, setItems] = useState('');
 
+    // logout
     const Logout = async () =>{
         try {
             await persistor.purge();
             await persistor.purge();
             await persistor.flush();
-            // persistStore(props).purge();
             setTimeout(() => persistor.purge(), 200);
             dispatch(logOutAction.logout());
-            // rootReducer(undefined, {type: 'LOGOUT_USER'});
           } catch (err) {
             console.log(err.message);
           }
     };
     const token = useSelector(state=>state.auth.token);
     const user = useSelector(state=>state.profile);
-    const {data, updated} = user;
+    const {data, updated, isUploaded} = user;
 
   useEffect(()=>{
     dispatch(profileAction.getProfile(token));
@@ -55,20 +63,81 @@ export default function Myprofile(props) {
     const searchHandler = () =>{
         props.navigation.navigate('Search');
     };
+
+    const options = {
+        title: 'Select Avatar',
+        customButtons: [{ name: 'fb', title: 'Choose Photo from Instagram' }],
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+      };
+      const createFormData = (results) => {
+        const image = new FormData();
+        console.log(results);
+
+        image.append('picture', {
+          name: results.fileName,
+          type: results.type,
+          uri: results.uri,
+        });
+        console.log((image._parts[0])[1]);
+        if (results.fileSize > 500000) {
+          Alert.alert('image size is too large, atleast < 500 kb');
+        }
+        else {
+          setItems((image._parts[0])[1].uri);
+          dispatch(profileAction.uploadProfileImage(token, image));
+        }
+      };
+      useEffect(()=>{
+        dispatch(profileAction.getProfile(token));
+        if (isUploaded) {
+          dispatch(profileAction.getProfile(token));
+          dispatch(profileAction.removeMessage());
+        }
+      },[dispatch, token, isUploaded]);
+
   return (
     <ScrollView style={styles.container}>
         {/* <StatusBar backgroundColor="blue" /> */}
-        <View style={{alignItems: 'flex-end', marginTop: 35, marginBottom: 5}}>
+        <View style={{alignItems: 'flex-end', marginBottom: 5}}>
             <TouchableOpacity onPress={searchHandler}>
-                <Icon name="magnify" size={30} />
+                <Icon name="search" size={30} />
             </TouchableOpacity>
         </View>
         <View>
             <Text style={styles.header}>My profile</Text>
         </View>
         <View style={styles.profileContainer}>
-            <View style={styles.imageContainer}>
-                <Thumbnail source={{uri: API_URL + data.profile_picture ? data.profile_picture : `https://ui-avatars.com/api/?size=50&name=${data.name}`}} />
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={styles.imageContainer}>
+                    <Thumbnail source={{uri: API_URL + data.profile_picture ? data.profile_picture : `https://ui-avatars.com/api/?size=50&name=${data.name}`}} />
+                </View>
+                <TouchableOpacity
+                    onPress={()=>{ImagePicker.showImagePicker(options, (response) => {
+                        if (response.didCancel) {
+                            console.log('User cancelled image picker');
+                        } else if (response.error) {
+                            console.log('ImagePicker Error: ', response.error);
+                        } else if (response.customButton) {
+                            console.log('User tapped custom button: ', response.customButton);
+                        } else {
+                            createFormData(response);
+                        }
+                    });}}
+                    style={{
+                        position: 'absolute',
+                        right: 5, top: 60,
+                        borderWidth: 1,
+                        backgroundColor: 'grey',
+                        padding: 5,
+                        borderRadius: 25,
+                        borderColor: 'grey',
+                    }}
+                    >
+                    <Icon name="camera" size={10} color="black" />
+                </TouchableOpacity>
             </View>
             <View style={styles.profileInfo}>
                 <Text style={styles.name}>{data.name}</Text>
@@ -81,27 +150,27 @@ export default function Myprofile(props) {
                     <Text style={styles.myOrderText}>My orders</Text>
                     <Text style={styles.subText}>Already have 12 orders</Text>
                 </View>
-                <Icon name="chevron-right" color="grey" size={25} />
+                <Icon name="chevron-right" color="grey" size={20} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.myOrder} onPress={addressHandler}>
                 <View>
                     <Text style={styles.myOrderText}>Shipping addresses</Text>
                     <Text style={styles.subText}>3 addresses</Text>
                 </View>
-                <Icon name="chevron-right" color="grey" size={25} />
+                <Icon name="chevron-right" color="grey" size={20} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.myOrder} onPress={settingAccountHandler}>
                 <View>
                     <Text style={styles.myOrderText}>Settings</Text>
                     <Text style={styles.subText}>Notifications, password</Text>
                 </View>
-                <Icon name="chevron-right" color="grey" size={25} />
+                <Icon name="chevron-right" color="grey" size={20} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.myOrder} onPress={Logout}>
                 <View>
                     <Text style={styles.myOrderText}>Logout</Text>
                 </View>
-                <Icon name="chevron-right" color="grey" size={25} />
+                <Icon name="chevron-right" color="grey" size={20} />
             </TouchableOpacity>
         </View>
     </ScrollView>

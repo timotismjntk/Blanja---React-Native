@@ -3,16 +3,16 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Login from '../screens/Login';
-import Signup from '../screens/Signup';
-import Profile from '../screens/ProfileStack';
-import HomeStack from '../screens/HomeStack';
-import StackNavigators from '../components/StackNav';
-import Mybags from '../screens/MyBagStack';
-import Shop from '../screens/ShopStack';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Login from './Login';
+import Signup from './Signup';
+import Profile from './ProfileStack';
+import HomeStack from './HomeStack';
+// import StackNavigators from '../components/StackNav';
+import Mybags from './MyBagStack';
+import Shop from './ShopStack';
 
-const Icon = MaterialCommunityIcons;
+const Icon = FontAwesome;
 const Tab = createMaterialBottomTabNavigator();
 
 export default function BottomTabs(props) {
@@ -26,31 +26,31 @@ export default function BottomTabs(props) {
       <Tab.Screen name="Home" options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <Icon name="home-outline" color={color} size={26} />
+            <Icon name="home" color={color} size={26} />
           ),
         }} component={HomeStack} />
       <Tab.Screen name="Shop" options={{
         tabBarLabel: 'Shop',
         tabBarIcon: ({ color }) => (
-          <Icon name="cart-outline" color={color} size={26} />
+          <Icon name="shopping-cart" color={color} size={23} />
         ),
       }} component={Shop} />
       <Tab.Screen name="Mybag" options={{
         tabBarLabel: 'Bag',
         tabBarIcon: ({ color }) => (
-          <Icon name="shopping-outline" color={color} size={26} />
+          <Icon name="shopping-bag" color={color} size={23} />
         ),
       }} component={Mybags} />
       <Tab.Screen name="Favorites" options={{
         tabBarLabel: 'Favorites',
         tabBarIcon: ({ color }) => (
-          <Icon name="heart-outline" color={color} size={26} />
+          <Icon name="heart" color={color} size={23} />
         ),
       }} component={Login} />
       <Tab.Screen name="Profile" options={{
         tabBarLabel: 'Profile',
         tabBarIcon: ({ color }) => (
-          <Icon name="account-outline" color={color} size={26} />
+          <Icon name="user" color={color} size={23} />
         ),
       }} component={Profile} />
     </Tab.Navigator>

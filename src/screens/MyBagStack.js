@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 // Import Screens
-import Mybags from './Mybags';
+import Mybags from './MyBags';
 import Search from './SearchStack';
 
 

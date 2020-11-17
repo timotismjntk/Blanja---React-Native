@@ -5,7 +5,7 @@ import {View, Text, TextInput, StyleSheet, TouchableOpacity, Alert} from 'react-
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import BottomTabs from '../components/BottomTabs';
+import BottomTabs from '../screens/BottomTabs';
 import Login from '../screens/Login';
 import Search from '../screens/SearchStack';
 import Success from '../screens/Success';
@@ -21,7 +21,6 @@ const Stack = createStackNavigator();
 
 const Main = (props) => {
   const searchHandler = () =>{
-    // Alert.alert('tes')
   props.navigation.navigate('Search');
   };
 

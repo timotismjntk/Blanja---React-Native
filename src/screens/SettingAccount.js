@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 import {
     View,
     ScrollView,
@@ -15,10 +16,29 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 // import components
 import ChangePassword from '../components/ChangePassword';
+import ChangeName from '../components/ChangeName';
+import ChangeBirthDate from '../components/ChangeBirthdate';
 
+
+import profileAction from '../redux/actions/profile';
 
 export default function SettingAccount() {
-    const [openModal, setOpenModal] = useState(false);
+    const dispatch = useDispatch();
+    const token = useSelector(state=>state.auth.token);
+    const user = useSelector(state=>state.profile);
+    const {data, updated} = user;
+
+    useEffect(()=>{
+        if (updated) {
+          dispatch(profileAction.getProfile(token));
+          dispatch(profileAction.removeMessage());
+        }
+      },[dispatch, token, updated]);
+
+    const [openModalPassword, setOpenModalPassword] = useState(false);
+    const [openModalName, setOpenModalName] = useState(false);
+    const [openModalBirthDate, setOpenModalBirthdate] = useState(false);
+
 
     const [isEnabledSales, setIsEnabledSales] = useState(false);
     const [isEnabledArrival, setIsEnabledArrival] = useState(false);
@@ -29,53 +49,42 @@ export default function SettingAccount() {
     const toggleSwitch3 = () => setIsEnabledDelivery(!isEnabledDelivery);
 
     const changePasswordToggle = () => {
-        setOpenModal(true);
+        setOpenModalPassword(true);
     };
-
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-  const [birthDate, setBirthdate] = useState('Date of Birth');
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    // setShow(Platform.OS === 'android');
-    const dates = currentDate.getDate();
-    const months = currentDate.getMonth();
-    const years = currentDate.getFullYear();
-    setBirthdate(`${dates}/${months}/${years}`);
-
-    setDate(currentDate);
-    setShow(false);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
+    const changeNameToggle = () => {
+        setOpenModalName(true);
+    };
+    const changeBirthdateToggle = () => {
+        setOpenModalBirthdate(true);
+    };
 
   return (
     <ScrollView style={styles.container}>
         <Text style={styles.header}>Settings</Text>
         <Text style={styles.subHeader}>Personal Information</Text>
-        <View style={styles.inputContainer}>
-            <TextInput placeholder="Full name" style={styles.input} />
+        <View style={styles.nameContainer}>
+            <Text style={styles.name}>Full Name</Text>
+            <TouchableOpacity onPress={changeNameToggle}>
+                <Text style={styles.changeName}>Change</Text>
+            </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={showDatepicker} style={[styles.inputContainer, {height: 65, paddingLeft: 30}]}>
-            <Text style={{color: 'grey'}}>{birthDate}</Text>
-        </TouchableOpacity>
+        <View style={styles.inputContainer}>
+            <TextInput placeholder="Full name" value={data.name} editable={false} style={styles.input} />
+        </View>
+        <View style={styles.birthDateContainer}>
+            <Text style={styles.name}>Birth Date</Text>
+            <TouchableOpacity onPress={changeBirthdateToggle}>
+                <Text style={styles.changeBirthdate}>Change</Text>
+            </TouchableOpacity>
+        </View>
+        <View style={styles.inputContainer}>
+            <TextInput placeholder="Birth Date" value={data.dateOfBirth} editable={false} style={styles.input} />
+        </View>
         <View style={styles.passwordContainer}>
             <Text style={styles.password}>Password</Text>
             <TouchableOpacity onPress={changePasswordToggle}>
                 <Text style={styles.changePassword}>Change</Text>
             </TouchableOpacity>
-        </View>
-        <View style={styles.inputContainer}>
-            <TextInput placeholder="Password" secureTextEntry={true} style={styles.input} />
         </View>
         <Text style={styles.notifications}>Notifications</Text>
         <View style={styles.notificationsContainer}>
@@ -102,17 +111,10 @@ export default function SettingAccount() {
                 value={isEnabledDelivery}
             />
         </View>
-        <ChangePassword open={openModal} close={()=>setOpenModal(false)} />
-        {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
+        <ChangePassword open={openModalPassword} close={()=>setOpenModalPassword(false)} />
+        <ChangeName open={openModalName} close={()=>setOpenModalName(false)} />
+        <ChangeBirthDate open={openModalBirthDate} close={()=>setOpenModalBirthdate(false)} />
+
     </ScrollView>
   );
 }
@@ -143,16 +145,41 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingLeft: 10,
         fontSize: 16,
+        color: 'black'
+    },
+    nameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 50,
+    },
+    name: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    birthDateContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 50,
+        marginBottom: 10,
     },
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 50,
+        marginBottom: 10,
     },
     password: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    changeName: {
+        color:'grey',
+    },
+    changeBirthdate: {
+        color:'grey',
     },
     changePassword: {
         color:'grey',

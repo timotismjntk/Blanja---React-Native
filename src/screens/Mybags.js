@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {View, ScrollView, FlatList, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
-
+import {Picker} from 'native-base';
 import orderPicture from '../assets/orderPicture.png';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // import actions
 import cartAction from '../redux/actions/cart';
@@ -26,7 +26,8 @@ const Mybags = (props) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [isDelete, setDelete] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
+  const [selected, setSelected] = useState('');
+  
   const increaseAmountProductCart = (id, prodId, quantity) => {
     setProductId(prodId);
     setCartId(id);
@@ -47,7 +48,16 @@ const decreaseAmountProductCart = (id, prodId, quantity) => {
           <View style={styles.cardSubParent}>
             <Text style={styles.productName}>{item.name}</Text>
             <TouchableOpacity>
-              <Icon name="dots-vertical" size={20} color="grey" />
+                <Picker
+                  note={true}
+                  mode="dropdown"
+                  style={{ width: 40, height: 40, top: 10, backgroundColor: 'white', color: 'white', position: 'absolute' }}
+                  selectedValue={selected}
+                  onValueChange={(value)=>{setSelected(value);}}
+                >
+                  <Picker.Item label="Delete Item" value="key0" />
+                </Picker>
+              <Icon name="ellipsis-v" size={20} color="grey" />
             </TouchableOpacity>
           </View>
           <View style={styles.cardSubChildOne}>
@@ -145,9 +155,9 @@ useEffect(()=>{
 
   return (
     <View style={styles.container}>
-      <View style={{alignItems: 'flex-end', marginTop: 35, marginBottom: 5, paddingRight: 10}}>
+      <View style={{alignItems: 'flex-end', marginBottom: 5, paddingRight: 10}}>
         <TouchableOpacity onPress={searchHandler}>
-            <Icon name="magnify" size={30} />
+            <Icon name="search" size={30} />
         </TouchableOpacity>
       </View>
       <View style={{padding: 15, paddingTop: 0}}>

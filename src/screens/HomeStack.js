@@ -17,7 +17,7 @@ import Home from '../screens/Home';
 import ProductDetail from '../screens/ProductDetail';
 import Myprofile from '../screens/Myprofile';
 import MyOrders from '../screens/MyOrders';
-import Mybags from '../screens/Mybags';
+import Mybags from './MyBags';
 import OrderDetail from '../screens/OrderDetail';
 import Address from '../screens/Address';
 import Setting from '../screens/SettingAccount';
@@ -38,25 +38,6 @@ export default class StackNavigator extends Component {
             headerBackImage: () => <HeaderIcon />,
           }}
         />
-        {/* <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetail}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitle: 'Short Dress',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity>
-                <Icon name="share-variant" size={25} />
-              </TouchableOpacity>
-            </View>),
-            headerTitleAlign: 'center',
-            // headerTitleStyle: { textAlign: 'center', marginLeft: -10 },
-            headerBackImage: () => <HeaderIcon />,
-          }}
-        /> */}
       </Stack.Navigator>
     );
   }

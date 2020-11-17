@@ -6,6 +6,7 @@ const initialState = {
   isError: false,
   alertMsg: '',
   updated: false,
+  isUploaded: false,
 };
 
 export default (state = initialState, action) => {
@@ -55,11 +56,36 @@ export default (state = initialState, action) => {
         updated: true,
       };
     }
+    case 'PATCH_PROFILE_IMAGE_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+      };
+    }
+    case 'PATCH_PROFILE_IMAGE_REJECTED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        alertMsg: 'There is an error at request data',
+      };
+    }
+    case 'PATCH_PROFILE_IMAGE_FULFILLED': {
+      console.log(action.payload);
+      return {
+        ...state,
+        isLoading: false,
+        alertMsg: 'Image updated',
+        isUploaded: true,
+      };
+    }
     case 'REMOVE_MESSAGE': {
       return {
         ...state,
         isLoading: false,
         updated: false,
+        alertMsg: '',
+        isUploaded: false,
       };
     }
     default: {

@@ -19,7 +19,7 @@ import ProductDetail from '../screens/ProductDetail';
 import SplashScreen from '../screens/SplashScreen';
 import Myprofile from '../screens/Myprofile';
 import MyOrders from '../screens/MyOrders';
-import Mybags from '../screens/Mybags';
+import Mybags from './MyBags';
 import OrderDetail from '../screens/OrderDetail';
 import Address from '../screens/Address';
 import Setting from '../screens/SettingAccount';
@@ -102,24 +102,6 @@ export default class StackNavigator extends Component {
             </View>),
           }}
         />
-        {/* <Stack.Screen
-          name="Search"
-          component={Search}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-              backgroundColor: 'transparent',
-            },
-            headerTitle: '',
-            headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
-              </TouchableOpacity>
-            </View>),
-          }}
-        /> */}
       </Stack.Navigator>
     );
   }

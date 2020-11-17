@@ -1,7 +1,18 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {View, Text, StyleSheet, Image, Keyboard, TextInput, TouchableOpacity, Alert} from 'react-native';
+import {
+    View,
+    ScrollView,
+    Text,
+    StyleSheet,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -67,35 +78,35 @@ export default function Login(props) {
     };
 
   return (
-    <View style={styles.parent}>
+    <ScrollView contentContainerStyle={styles.parent}>
         <View>
             <Text style={styles.headerSignUp}>Login</Text>
         </View>
         <View style={styles.signup}>
-            <View style={styles.inputParent}>
+            <KeyboardAvoidingView style={styles.inputParent}>
                 <Text onFocus={Focus} style={[styles.text, {bottom: bottom}]}>Email</Text>
                 <TextInput style={[styles.inputText]} onChangeText={(text)=>{setEmail(text);}} onFocus={Focus} onBlur={ () => Blur() } />
-            </View>
-            <View style={styles.inputParent}>
+            </KeyboardAvoidingView>
+            <KeyboardAvoidingView style={styles.inputParent}>
                 <Text onFocus={Focus} style={[styles.text, {bottom: bottom1}]}>Password</Text>
                 <TextInput style={[styles.inputText]} onChangeText={(text)=>{setPassword(text);}} onFocus={Focus1} onBlur={ () => Blur1() } />
-            </View>
+            </KeyboardAvoidingView>
             <View style={styles.loginLink}>
               <Text style={styles.link}>Forgot your password?</Text>
             </View>
-            <View style={styles.signUpBtn}>
+            <KeyboardAvoidingView style={styles.signUpBtn}>
                 <TouchableOpacity onPress={loginHandler} style={styles.btn}>
                     <Text style={styles.textSignup}>LOGIN</Text>
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
     parent: {
-        flex: 1,
+        // flex: 1,
         paddingTop: 10,
         paddingLeft: 20,
         paddingRight: 20,

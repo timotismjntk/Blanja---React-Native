@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import http from '../../helpers/http';
-// import qs from 'querystring';
+import qs from 'query-string';
 
 export default {
   getProfile: (token) => {
@@ -18,7 +18,13 @@ export default {
   updateProfile: (token, data) => {
     return {
       type: 'PATCH_PROFILE',
-      payload: http(token).patch('manage/users', {name: data[0], email: data[1], phone_number: data[2]}),
+      payload: http(token).patch('manage/users', qs.stringify(data)),
+    };
+  },
+  uploadProfileImage: (token, data) => {
+    return {
+      type: 'PATCH_PROFILE_IMAGE',
+      payload: http(token).patch('manage/users', data),
     };
   },
   removeMessage: () => {
