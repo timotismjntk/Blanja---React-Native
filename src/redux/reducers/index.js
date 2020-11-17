@@ -2,6 +2,7 @@
 import {combineReducers} from 'redux';
 
 import auth from './auth';
+import allProduct from './allProduct';
 import NewProduct from './newProduct';
 import popularProduct from './popularProduct';
 import profile from './profile';
@@ -13,6 +14,7 @@ import address from './address';
 
 export default combineReducers({
   auth,
+  allProduct,
   NewProduct,
   popularProduct,
   profile,

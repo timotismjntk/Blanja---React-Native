@@ -5,14 +5,17 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
 import {store, persistor} from './src/redux/store';
 import {PersistGate} from 'redux-persist/integration/react';
+import SplashScreen from 'react-native-splash-screen'
 
 // Import Screens
 import Main from './src/screens/Main';
+import ViewProduct from './src/screens/ViewProduct';
+import FilterProduct from './src/screens/FilterProduct';
 
 export default class App extends Component {
-  // state = {
-  //   isLogin: false,
-  // };
+  // componentDidMount() {
+  //   SplashScreen.hide();
+  // }
   render() {
     // const {isLogin} = this.state;
     return (

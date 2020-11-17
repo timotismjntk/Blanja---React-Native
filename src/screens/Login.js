@@ -13,7 +13,7 @@ import {
     TouchableOpacity,
     Alert,
 } from 'react-native';
-
+import Toast from 'react-native-root-toast';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import loginAction from '../redux/actions/auth';
@@ -26,6 +26,8 @@ export default function Login(props) {
     const [password, setPassword] = useState('');
     const [bottom, setBottom] = useState(20);
     const [bottom1, setBottom1] = useState(20);
+    const [message, setMessage] = useState('');
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
@@ -69,6 +71,11 @@ export default function Login(props) {
         }
     };
 
+
+    const LoginState = useSelector(state=>state.auth);
+
+    const {isLogin, isError, isLoading} = LoginState;
+
     const loginHandler = () =>{
         setTimeout(() =>{
             dispatch(loginAction.login(email, password));
@@ -76,6 +83,15 @@ export default function Login(props) {
         // console.log(data);
         // props.navigation.navigate('ProductDetail');
     };
+
+
+    useEffect(() => {
+        if (isError) {
+            setMessage('Wrong Email or Password');
+            setVisible(true);
+            console.log('error');
+        }
+      }, [isLogin, isError, isLoading]);
 
   return (
     <ScrollView contentContainerStyle={styles.parent}>
@@ -99,6 +115,15 @@ export default function Login(props) {
                     <Text style={styles.textSignup}>LOGIN</Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
+            <Toast
+            visible={true}
+            position={50}
+            shadow={false}
+            animation={true}
+            hideOnPress={true}
+            backgroundColor="red"
+            textColor="yellow"
+        >{message}</Toast>
         </View>
     </ScrollView>
   );

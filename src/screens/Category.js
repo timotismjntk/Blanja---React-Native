@@ -8,49 +8,6 @@ const windowHeight = Dimensions.get('window').height;
 // import Action
 import ProductCategoryAction from '../redux/actions/categoryProduct';
 
-const listItem = [
-  {
-    id: 1,
-    name: 'Tops',
-  },
-  {
-    id: 2,
-    name: 'Shirts & Blouses',
-  },
-  {
-    id: 3,
-    name: 'Cardigans & Sweaters',
-  },
-  {
-    id: 4,
-    name: 'Knitwear',
-  },
-  {
-    id: 5,
-    name: 'Jeans',
-  },
-  {
-    id: 6,
-    name: 'Shorts',
-  },
-  {
-    id: 7,
-    name: 'Shorts',
-  },
-  {
-    id: 8,
-    name: 'Shorts',
-  },
-  {
-    id: 9,
-    name: 'Shorts',
-  },
-  {
-    id: 10,
-    name: 'Shorts',
-  },
-];
-
 const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <Text style={styles.title}>{item.category_name}</Text>
