@@ -24,7 +24,9 @@ export default function NewProduct(props) {
     // const [id, setId] = useState(1);
 
     useEffect(()=>{
-        dispatch(newProductAction.getNewProduct());
+        dispatch(newProductAction.getNewProduct()).catch((err) =>
+        console.log(err.message),
+      );
     }, [dispatch]);
 
     const detailProduct = (itemId, itemName) =>{
@@ -66,7 +68,7 @@ export default function NewProduct(props) {
             <Text style={styles.textInfo}>You’ve never seen it before!</Text>
         </View>
         <Carousel
-        data={data}
+        data={data.length ? data : []}
         renderItem={renderItem}
         sliderWidth={350}
         itemWidth={150}

@@ -16,6 +16,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Thumbnail} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
+import Toast from 'react-native-root-toast';
 import {store, persistor} from '../redux/store';
 
 // import actions
@@ -28,27 +29,34 @@ import {API_URL} from '@env';
 export default function Myprofile(props) {
     const dispatch = useDispatch();
     const [items, setItems] = useState('');
-
+    const [message, setMessage] = useState('');
+    const [visible, setVisible] = useState(false);
     // logout
     const Logout = async () =>{
         try {
             await persistor.purge();
             await persistor.purge();
             await persistor.flush();
-            setTimeout(() => persistor.purge(), 200);
-            dispatch(logOutAction.logout());
+            setTimeout(async() => await persistor.purge(), 200);
+            setTimeout(() => dispatch(logOutAction.logout()), 200);
           } catch (err) {
             console.log(err.message);
           }
     };
     const token = useSelector(state=>state.auth.token);
+
+    useEffect(()=>{
+        dispatch(profileAction.getProfile(token))
+        .catch((err) => console.log(err.message));
+      },[dispatch, token]);
+
     const user = useSelector(state=>state.profile);
     const {data, updated, isUploaded} = user;
 
   useEffect(()=>{
-    dispatch(profileAction.getProfile(token));
     if (updated) {
-      dispatch(profileAction.getProfile(token));
+      dispatch(profileAction.getProfile(token))
+      .catch((err) => console.log(err.message));
     }
   },[dispatch, token, updated]);
     const myOrderHandler = () =>{
@@ -83,36 +91,47 @@ export default function Myprofile(props) {
         });
         console.log((image._parts[0])[1]);
         if (results.fileSize > 500000) {
-          Alert.alert('image size is too large, atleast < 500 kb');
+          setMessage('image size is too large, atleast < 500 kb');
+          setVisible(true);
+          setTimeout(() => {
+            setVisible(false);
+          }, 3000);
         }
         else {
           setItems((image._parts[0])[1].uri);
-          dispatch(profileAction.uploadProfileImage(token, image));
+          dispatch(profileAction.uploadProfileImage(token, image))
+          .catch((err) => console.log(err.message));
         }
       };
       useEffect(()=>{
         dispatch(profileAction.getProfile(token));
         if (isUploaded) {
-          dispatch(profileAction.getProfile(token));
+          setMessage('Image Uploaded successfully');
+          setVisible(true);
+          dispatch(profileAction.getProfile(token))
+          .catch((err) => console.log(err.message));
           dispatch(profileAction.removeMessage());
+          setTimeout(() => {
+            setVisible(false);
+          }, 3000);
         }
       },[dispatch, token, isUploaded]);
 
   return (
     <ScrollView style={styles.container}>
         {/* <StatusBar backgroundColor="blue" /> */}
-        <View style={{alignItems: 'flex-end', marginBottom: 5}}>
+        {/* <View style={{alignItems: 'flex-end', marginBottom: 5, marginTop: 25}}>
             <TouchableOpacity onPress={searchHandler}>
                 <Icon name="search" size={30} />
             </TouchableOpacity>
-        </View>
+        </View> */}
         <View>
             <Text style={styles.header}>My profile</Text>
         </View>
         <View style={styles.profileContainer}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <View style={styles.imageContainer}>
-                    <Thumbnail source={{uri: API_URL + data.profile_picture ? data.profile_picture : `https://ui-avatars.com/api/?size=50&name=${data.name}`}} />
+                    <Thumbnail source={data.profile_picture ? {uri: data.profile_picture} : {uri: `https://ui-avatars.com/api/?size=50&name=${data.name}`}} />
                 </View>
                 <TouchableOpacity
                     onPress={()=>{ImagePicker.showImagePicker(options, (response) => {
@@ -138,6 +157,16 @@ export default function Myprofile(props) {
                     >
                     <Icon name="camera" size={10} color="black" />
                 </TouchableOpacity>
+                <Toast
+                visible={visible}
+                position={40}
+                shadow={true}
+                animation={true}
+                hideOnPress={true}
+                // textColor="yellow"
+                >
+                {message}
+                </Toast>
             </View>
             <View style={styles.profileInfo}>
                 <Text style={styles.name}>{data.name}</Text>

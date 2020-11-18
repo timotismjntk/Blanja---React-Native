@@ -12,6 +12,7 @@ import {
 import Carousel from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BottomSheet, RadioButton} from 'react-native-btr';
+import Toast from 'react-native-root-toast';
 
 // Import component
 import Rating from '../components/Rating';
@@ -48,6 +49,8 @@ export default function ProductDetail({route, navigation}) {
   const [isCheckedRed, setIsCheckedRed] = useState(false);
   const [isCheckedBlue, setIsCheckedBlue] = useState(false);
   const [isCheckedGreen, setIsCheckedGreen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -95,7 +98,7 @@ export default function ProductDetail({route, navigation}) {
 
   const {token} = useSelector((state) => state.auth);
   const quantityState = useSelector((state) => state.cart);
-  const {quantity, isAdded, isError} = quantityState;
+  const {quantity, isAdded, info, isError, alertMsg} = quantityState;
   const productState = useSelector((state) => state.detailproduct);
   const {data, price} = productState;
 
@@ -106,12 +109,32 @@ export default function ProductDetail({route, navigation}) {
       product_id: id,
       quantity,
     };
-    dispatch(cartAction.createCart(token, dataCart));
+    dispatch(cartAction.createCart(token, dataCart)).catch((err) =>
+      console.log(err.message),
+    );
   };
 
+  // useEffect(() => {
+  //   if (isError && info.length) {
+  //     setMessage(alertMsg);
+  //     setVisible(true);
+  //     setTimeout(() => {
+  //       setVisible(false);
+  //     }, 1000);
+  //     // dispatch(cartAction.clearMessage());
+  //   }
+  // }, [info, isError, alertMsg, dispatch]);
+
   useEffect(() => {
-    console.log(data.price);
-  }, [data]);
+    if (isAdded) {
+      setMessage('Item added to cart successfully');
+      setVisible(true);
+      setTimeout(() => {
+        setVisible(false);
+        return dispatch(cartAction.clearMessage());
+      }, 5000);
+    }
+  }, [isAdded, dispatch]);
   return (
     <>
       {data ? (
@@ -148,11 +171,13 @@ export default function ProductDetail({route, navigation}) {
                 <View style={styles.productParent}>
                   <Text style={styles.productName}>{data.name}</Text>
                   <Text style={styles.price}>
-                    {data.length > 0 ? convertToRupiah(data.price) : 'Rp. 0'}
+                    {data.price ? convertToRupiah(data.price) : 'Rp. 0'}
                   </Text>
                 </View>
                 <Text style={styles.product}>{data.category_name}</Text>
-                <Rating number={data.length > 0 ? data.total_rating : 0} />
+                <Rating
+                  number={data.total_rating > 0 ? data.total_rating : 0}
+                />
               </View>
               <View>
                 <Text style={styles.description}>{data.description}</Text>
@@ -280,6 +305,16 @@ export default function ProductDetail({route, navigation}) {
       ) : (
         <Text>Loading</Text>
       )}
+      <Toast
+        visible={visible}
+        position={40}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        // textColor="yellow"
+      >
+        {message}
+      </Toast>
     </>
   );
 }

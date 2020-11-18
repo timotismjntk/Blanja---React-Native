@@ -7,15 +7,20 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 // Import Screens
 import Category from './Category';
 import Search from './Search';
+import ViewAll from './ViewProduct';
+import FilterProduct from './FilterProduct';
 
 
 export default class MyBagStack extends Component {
+  searchHandler = () =>{
+    this.props.navigation.navigate('Search');
+  };
   render() {
     return (
       <Stack.Navigator>
@@ -32,7 +37,7 @@ export default class MyBagStack extends Component {
             headerTitleAlign: 'center',
             headerRight: ()=>(<View style={styles.share}>
               <TouchableOpacity>
-                <Icon name="magnify" size={25} />
+                <Icon name="search" size={25} />
               </TouchableOpacity>
             </View>),
           }}
@@ -50,7 +55,25 @@ export default class MyBagStack extends Component {
             headerTitleAlign: 'center',
             headerRight: ()=>(<View style={styles.share}>
               <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
+                <Icon name="search" size={25} />
+              </TouchableOpacity>
+            </View>),
+          }}
+        />
+        <Stack.Screen
+          name="ViewAll"
+          component={ViewAll}
+          options={{
+            headerStyle: {
+              elevation: 0,
+              shadowOpacity: 0,
+              backgroundColor: 'transparent',
+            },
+            headerTitle: '',
+            headerTitleAlign: 'center',
+            headerRight: ()=>(<View style={styles.share}>
+              <TouchableOpacity onPress={this.searchHandler}>
+                <Icon name="search" size={25} />
               </TouchableOpacity>
             </View>),
           }}

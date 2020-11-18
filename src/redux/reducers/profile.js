@@ -7,6 +7,8 @@ const initialState = {
   alertMsg: '',
   updated: false,
   isUploaded: false,
+  isMatch: false,
+  isNotMatch: false,
 };
 
 export default (state = initialState, action) => {
@@ -31,6 +33,31 @@ export default (state = initialState, action) => {
         ...state,
         isLoading: false,
         data: action.payload.data.userId[0],
+      };
+    }
+    case 'POST_CHECK_PASSWORD_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+      };
+    }
+    case 'POST_CHECK_PASSWORD_REJECTED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        isNotMatch: true,
+        alertMsg: 'Password doesnt match',
+      };
+    }
+    case 'POST_CHECK_PASSWORD_FULFILLED': {
+      console.log(action.payload.data.message);
+      return {
+        ...state,
+        isLoading: false,
+        isMatch: true,
+        isNotMatch: false,
+        alertMsg: action.payload.data.message,
       };
     }
     case 'PATCH_PROFILE_PENDING': {
@@ -86,6 +113,8 @@ export default (state = initialState, action) => {
         updated: false,
         alertMsg: '',
         isUploaded: false,
+        isMatch: false,
+        isNotMatch: false,
       };
     }
     default: {

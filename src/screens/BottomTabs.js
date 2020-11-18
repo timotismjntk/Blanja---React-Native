@@ -41,12 +41,6 @@ export default function BottomTabs(props) {
           <Icon name="shopping-bag" color={color} size={23} />
         ),
       }} component={Mybags} />
-      <Tab.Screen name="Favorites" options={{
-        tabBarLabel: 'Favorites',
-        tabBarIcon: ({ color }) => (
-          <Icon name="heart" color={color} size={23} />
-        ),
-      }} component={Login} />
       <Tab.Screen name="Profile" options={{
         tabBarLabel: 'Profile',
         tabBarIcon: ({ color }) => (

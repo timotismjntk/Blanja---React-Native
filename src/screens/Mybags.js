@@ -1,8 +1,10 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {View, ScrollView, FlatList, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, ScrollView, Alert, FlatList, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Picker} from 'native-base';
+import Toast from 'react-native-root-toast';
+
 import orderPicture from '../assets/orderPicture.png';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -24,21 +26,31 @@ const Mybags = (props) => {
   const [cartId, setCartId] = useState([]);
   const [product_id, setProductId] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [isDelete, setDelete] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [selected, setSelected] = useState('');
-  
+  const [selected, setSelected] = useState(undefined);
+  const [message, setMessage] = useState('');
+  const [visible, setVisible] = useState(false);
+
   const increaseAmountProductCart = (id, prodId, quantity) => {
     setProductId(prodId);
     setCartId(id);
     setQty(quantity + 1);
-};
+  };
 
-const decreaseAmountProductCart = (id, prodId, quantity) => {
-    setProductId(prodId);
-    setCartId(id);
-    setQty(quantity - 1);
-};
+  const decreaseAmountProductCart = (id, prodId, quantity) => {
+      setProductId(prodId);
+      setCartId(id);
+      setQty(quantity - 1);
+  };
+
+  const deleteCartById = (id) => {
+    dispatch(cartAction.deleteCart(token, Number(id)))
+    .catch((err) => console.log(err.message));
+  };
+
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
 
   const itemCart = ({ item, onPress, style }) => (
     <View style={{padding: 15}}>
@@ -49,13 +61,16 @@ const decreaseAmountProductCart = (id, prodId, quantity) => {
             <Text style={styles.productName}>{item.name}</Text>
             <TouchableOpacity>
                 <Picker
-                  note={true}
                   mode="dropdown"
-                  style={{ width: 40, height: 40, top: 10, backgroundColor: 'white', color: 'white', position: 'absolute' }}
+                  style={{ width: 40, height: 80, top: 10, backgroundColor: 'white', color: 'white', position: 'absolute' }}
                   selectedValue={selected}
-                  onValueChange={(value)=>{setSelected(value);}}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setSelected(itemValue === setSelected('key1') ? setSelected('key2') : setSelected('key1'));
+                    deleteCartById(item.id);
+                  }}
                 >
-                  <Picker.Item label="Delete Item" value="key0" />
+                  <Picker.Item label="Are you sure?" value="key1" />
+                  <Picker.Item label="Delete Item" color="red" value="key2" />
                 </Picker>
               <Icon name="ellipsis-v" size={20} color="grey" />
             </TouchableOpacity>
@@ -110,23 +125,29 @@ useEffect(()=>{
 
 useEffect(()=>{
     setTimeout(()=>{
-        dispatch(cartAction.getCart(token));
+        dispatch(cartAction.getCart(token))
+        .catch((err) => console.log(err.message));
     }, 200);
 }, [dispatch, token]);
 
 const quantityState = useSelector(state=>state.cart);
-const {info, isError, isLoading, isSelected, totalSummary} = quantityState;
+const {info, isError, isLoading, isSelected, isDelete, totalSummary} = quantityState;
 
 useEffect(()=>{
     if (isLoading) {
-        dispatch(cartAction.getCart(token));
+        dispatch(cartAction.getCart(token))
+        .catch((err) => console.log(err.message));
     }
 }, [dispatch, isLoading, isError, token, info]);
 
 useEffect(()=>{
     if (isDelete) {
-        dispatch(cartAction.deleteCart(token, cartId));
-        setDelete(false);
+        setMessage('Item deleted successfully');
+        setVisible(true);
+        setTimeout(() => {
+          setVisible(false);
+        }, 3000);
+        dispatch(cartAction.clearMessage());
     }
 }, [cartId, dispatch, token, isSelected, isDelete]);
 
@@ -147,7 +168,8 @@ useEffect(()=>{
         };
         dispatch(cartAction.patchQuantityCart(token, data, {user_id: cartId}, product_id));
         setTimeout(() =>{
-            dispatch(cartAction.getCart(token));
+            dispatch(cartAction.getCart(token))
+            .catch((err) => console.log(err.message));
         });
     }
 }, [dispatch, product_id, isSelected, qty, cartId, token, totalPrice]);
@@ -155,32 +177,49 @@ useEffect(()=>{
 
   return (
     <View style={styles.container}>
-      <View style={{alignItems: 'flex-end', marginBottom: 5, paddingRight: 10}}>
-        <TouchableOpacity onPress={searchHandler}>
-            <Icon name="search" size={30} />
-        </TouchableOpacity>
+      <View style={{backgroundColor: 'white', padding: 5, paddingBottom: 15}}>
+        <View style={{alignItems: 'flex-end', marginVertical: 5, paddingRight: 10}}>
+          <TouchableOpacity onPress={searchHandler}>
+              <Icon name="search" size={25} />
+          </TouchableOpacity>
+        </View>
+        <View style={{padding: 10, paddingTop: 0}}>
+          <Text style={styles.header}>My Bag</Text>
+        </View>
       </View>
-      <View style={{padding: 15, paddingTop: 0}}>
-        <Text style={styles.header}>My Bag</Text>
-      </View>
-      <FlatList
+      {info.length
+      ? <FlatList
         data={info}
         renderItem={itemCart}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.name + item.id.toString()}
         // extraData={selectedId}
-      />
+        /> :
+        <View style={{flex: 1, padding: 10}}>
+          <Text style={{fontSize: 20, fontWeight: 'bold', color: 'red'}}>Ooopsss....</Text>
+          <Text>likely you not have any item in your cart.</Text>
+        </View>}
       {/* <View style={{marginBottom: 100}}>
       </View> */}
 
       <View style={styles.Checkout}>
         <View style={styles.amount}>
             <Text style={styles.total}>Total amount:</Text>
-            <Text style={styles.price}>{convertToRupiah(totalSummary)}</Text>
+            <Text style={styles.price}>{info.length ? convertToRupiah(totalSummary) : convertToRupiah(0)}</Text>
           </View>
           <TouchableOpacity style={styles.btnCheck} onPress={checkoutHandler}>
             <Text style={styles.checkoutText}>CHECK OUT</Text>
           </TouchableOpacity>
       </View>
+      <Toast
+        visible={visible}
+        position={40}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        // textColor="yellow"
+      >
+        {message}
+      </Toast>
     </View>
   );
 };
@@ -191,6 +230,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // padding: 10,
+    // marginTop: 35,
     flexGrow: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -246,7 +286,8 @@ const styles = StyleSheet.create({
     width: 104,
     height: 104,
     resizeMode: 'contain',
-    borderRadius: 15,
+    borderRadius: 10,
+    // marginLeft: 5,
   },
   color: {
     flexDirection: 'row',

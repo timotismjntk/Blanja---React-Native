@@ -14,7 +14,7 @@ export default class Home extends Component {
     return (
       <ScrollView>
         <SafeAreaView>
-          <StatusBar translucent backgroundColor="transparent" />
+          {/* <StatusBar translucent backgroundColor="transparent" /> */}
           <View style={styles.parent}>
             <Image source={ImageBackground} />
           </View>

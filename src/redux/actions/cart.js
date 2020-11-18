@@ -46,4 +46,7 @@ export default {
   decreaseQuantityBeforeAddCart: () => ({
     type: 'DECREASE_QUANTITY',
   }),
+  clearMessage: () => ({
+    type: 'CLEAR_MESSAGE_CART',
+  }),
 };

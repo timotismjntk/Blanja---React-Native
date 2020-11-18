@@ -74,12 +74,11 @@ export default function Login(props) {
 
     const LoginState = useSelector(state=>state.auth);
 
-    const {isLogin, isError, isLoading} = LoginState;
+    const {isLogin, isError, isLoading, alertMsg} = LoginState;
 
     const loginHandler = () =>{
-        setTimeout(() =>{
-            dispatch(loginAction.login(email, password));
-        }, 500);
+        dispatch(loginAction.login(email, password))
+        .catch((err) => console.log(err.message));
         // console.log(data);
         // props.navigation.navigate('ProductDetail');
     };
@@ -89,9 +88,16 @@ export default function Login(props) {
         if (isError) {
             setMessage('Wrong Email or Password');
             setVisible(true);
-            console.log('error');
+            setTimeout(() =>{
+                dispatch(loginAction.clearMessage());
+                setVisible(false);
+            }, 3000);
         }
-      }, [isLogin, isError, isLoading]);
+        if (isLogin) {
+            dispatch(loginAction.clearMessage());
+            setVisible(true);
+        }
+      }, [isLogin, isError, isLoading, alertMsg, dispatch]);
 
   return (
     <ScrollView contentContainerStyle={styles.parent}>
@@ -116,14 +122,13 @@ export default function Login(props) {
                 </TouchableOpacity>
             </KeyboardAvoidingView>
             <Toast
-            visible={true}
-            position={50}
+            visible={visible}
+            position={40}
             shadow={false}
             animation={true}
             hideOnPress={true}
-            backgroundColor="red"
-            textColor="yellow"
-        >{message}</Toast>
+            // textColor="yellow"
+            >{message}</Toast>
         </View>
     </ScrollView>
   );

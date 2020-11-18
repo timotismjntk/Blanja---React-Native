@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   View,
   Text,
@@ -14,9 +15,13 @@ import {
 import {BottomSheet} from 'react-native-btr';
 import * as yup from 'yup';
 import { Formik } from 'formik';
+import Toast from 'react-native-root-toast';
 
 // Import image
 import Line from '../assets/line.png';
+
+// import actions
+import profileAction from '../redux/actions/profile';
 
 export default function ChangePassword(props) {
     const {
@@ -33,11 +38,75 @@ export default function ChangePassword(props) {
     }, [open]);
 
     const [visible, setVisible] = useState(open);
+    const [oldPassword, setOldPassword] = useState('');
+    const [message, setMessage] = useState('');
+    const [show, setShow] = useState(false);
 
     const toggleBottomModal = () => {
         setVisible(open);
     };
+    const dispatch = useDispatch();
+
+    const token = useSelector(state=>state.auth.token);
+    const privateData = useSelector(state=>state.profile);
+    const {data, isMatch, isError, isNotMatch, updated, alertMsg} = privateData;
+
+    const checkPasswordHandler = (values) => {
+      // console.log(values.newPassword)
+      const email = data.email;
+      const result = {
+        email,
+        password: oldPassword,
+      };
+      console.log(result);
+      dispatch(profileAction.checkPassword(token, result))
+      .catch((err) => console.log(err.message));
+      setTimeout(() => {
+        if (isMatch) {
+          console.log('password cocok');
+          if (values.newPassword && values.repeatPassword !== oldPassword ) {
+            // console.log(values.newPassword);
+            // setShow(true);
+            // setMessage(alertMsg);
+            dispatch(profileAction.updateProfile(token, {password: values.newPassword}))
+            .catch((err) => console.log(err.message));
+            setTimeout(() => {
+              dispatch(profileAction.removeMessage());
+              setShow(false);
+            },1000);
+          } else {
+            setShow(true);
+            setMessage('new password cannot be same with old password');
+            setTimeout(() => {
+              setShow(false);
+            },2000);
+          }
+        }
+        if (isNotMatch) {
+            setMessage('password is not match');
+            setShow(true);
+            setTimeout(() => {
+              dispatch(profileAction.removeMessage());
+              setShow(false);
+            },1500);
+        }
+      }, 2000);
+
+    };
+    useEffect(() => {
+      if (isMatch && updated) {
+          setShow(true);
+          setMessage('Password updated successfully');
+          setTimeout(() => {
+          dispatch(profileAction.removeMessage());
+          setShow(false);
+          setVisible(close);
+        },8000);
+      }
+    }, [dispatch, isMatch, close, updated]);
+
   return (
+    <>
     <BottomSheet
       visible={visible}
       onBackButtonPress={toggleBottomModal}
@@ -52,6 +121,8 @@ export default function ChangePassword(props) {
             placeholder="Old Password"
             secureTextEntry={true}
             style={styles.input}
+            value={oldPassword}
+            onChangeText={(text)=> setOldPassword(text)}
           />
         </View>
         <View style={styles.forgot}>
@@ -59,7 +130,9 @@ export default function ChangePassword(props) {
         </View>
         <Formik
         initialValues={{ newPassword: '', repeatPassword: '' }}
-        onSubmit={values => Alert.alert(JSON.stringify(values))}
+        onSubmit={values => {
+          checkPasswordHandler(values);
+        }}
         validationSchema={yup.object().shape({
           newPassword: yup
             .string()
@@ -123,6 +196,20 @@ export default function ChangePassword(props) {
         </Formik>
       </View>
     </BottomSheet>
+    <View style={{zIndex: 1, position: 'absolute', flex: 1}}>
+      <Toast
+        visible={show}
+        position={70}
+        opacity={50}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        backgroundColor='red'
+        // textColor="yellow"
+      >{message}
+      </Toast>
+      </View>
+    </>
   );
 }
 

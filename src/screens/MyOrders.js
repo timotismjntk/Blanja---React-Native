@@ -15,14 +15,14 @@ export default function Myprofile(props) {
     };
   return (
     <ScrollView style={styles.container}>
-        <View style={{flexDirection: 'row', padding: 0, justifyContent: 'space-between', marginTop: 35, marginBottom: 30}}>
+        {/* <View style={{flexDirection: 'row', padding: 0, justifyContent: 'space-between', marginTop: 35, marginBottom: 30}}>
             <TouchableOpacity onPress={toProfile}>
                 <Icon name="chevron-left" size={35} />
             </TouchableOpacity>
             <TouchableOpacity>
                 <Icon name="magnify" size={30} />
             </TouchableOpacity>
-        </View>
+        </View> */}
         <View style={{paddingLeft: 10, paddingRight: 10}}>
             <Text style={styles.header}>My Orders</Text>
         </View>

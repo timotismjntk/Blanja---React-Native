@@ -18,8 +18,11 @@ const Category = (props) => {
   const dispatch = useDispatch();
 
     useEffect(()=>{
-        dispatch(ProductCategoryAction.getCatProduct());
+        dispatch(ProductCategoryAction.getCatProduct())
+        .catch((err) => console.log(err.message));
     }, [dispatch]);
+
+    const navigateToAllProduct = () => props.navigation.navigate('ViewAll', {search: ''});
 
     const productState = useSelector(state=>state.categoryProduct);
 
@@ -27,7 +30,7 @@ const Category = (props) => {
   return (
     <View style={styles.container}>
         <View style={styles.btnParent}>
-            <TouchableOpacity style={styles.btn}>
+            <TouchableOpacity style={styles.btn} onPress={navigateToAllProduct}>
                 <Text style={styles.btnText}>VIEW ALL ITEMS</Text>
             </TouchableOpacity>
         </View>
@@ -37,7 +40,7 @@ const Category = (props) => {
         <FlatList
             data={data}
             renderItem={Item}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             // extraData={selectedId}
         />
     </View>

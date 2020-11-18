@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 import {
   View,
   ScrollView,
@@ -9,6 +10,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+
+import {API_URL} from '@env';
 
 // import image
 import filter from '../assets/filter.png';
@@ -25,38 +28,62 @@ import convertToRupiah from '../helpers/rupiahConverter';
 // import Action
 import AllProductAction from '../redux/actions/allProduct';
 
-const Item = ({item, onPress, style}) => (
-  <TouchableOpacity onPress={onPress} style={[styles.product, style]}>
-    <Image source={order} style={styles.image} />
-    <View style={styles.containerCard}>
-      <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.storeName}>
-        {item.store_name.length > 0 ? item.store_name : 'Zalora'}
-      </Text>
-      <Rating number={item.rating_id} />
-      <Text style={styles.price}>
-        {item ? convertToRupiah(item.price) : 'Rp. 0'}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
+const ViewProduct = ({route}) => {
+  const detailProduct = (itemId, itemName) => {
+    navigation.navigate('ProductDetail', {
+      id: itemId,
+      title: itemName,
+    });
+  };
 
-const ViewProduct = () => {
+  const Item = ({item, onPress, style}) => (
+    <TouchableOpacity
+      onPress={() => detailProduct(item.id, item.name)}
+      style={[styles.product, style]}>
+      <Image source={{uri: API_URL + item.url}} style={styles.image} />
+      <View style={styles.containerCard}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.storeName}>
+          {item.store_name.length > 0 ? item.store_name : 'Zalora'}
+        </Text>
+        <Rating number={item.total_rating} />
+        <Text style={styles.price}>
+          {item ? convertToRupiah(item.price) : 'Rp. 0'}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const navigation = useNavigation();
   const dispatch = useDispatch();
+  const {search} = route.params;
+
+  console.log(route);
+  useEffect(() => {
+    dispatch(AllProductAction.getProduct()).catch((err) =>
+      console.log(err.message),
+    );
+  }, [dispatch]);
 
   useEffect(() => {
-    dispatch(AllProductAction.getProduct());
-  }, [dispatch]);
+    if (search.length) {
+      dispatch(AllProductAction.getProduct(search)).catch((err) =>
+        console.log(err.message),
+      );
+      console.log(search);
+    }
+  }, [dispatch, search]);
 
   const productState = useSelector((state) => state.allProduct);
 
   const {data} = productState;
+  const gotoFilter = () => navigation.navigate('FilterProduct');
   return (
     <View style={{flex: 1}}>
       <View style={styles.parent}>
-        <Text style={styles.header}>Shorts</Text>
+        {/* <Text style={styles.header}>Shorts</Text> */}
         <View style={styles.nav}>
-          <TouchableOpacity style={styles.subNav}>
+          <TouchableOpacity style={styles.subNav} onPress={gotoFilter}>
             <Image source={filter} style={styles.icon} />
             <Text>Filters</Text>
           </TouchableOpacity>
@@ -69,14 +96,20 @@ const ViewProduct = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.item}>
-        <FlatList
-          data={data}
-          renderItem={Item}
-          keyExtractor={(item) => item.id.toString()}
-          // extraData={selectedId}
-        />
-      </View>
+      {data.length ? (
+        <View style={styles.item}>
+          <FlatList
+            data={data}
+            renderItem={Item}
+            keyExtractor={(item) => item.id.toString()}
+            // extraData={selectedId}
+          />
+        </View>
+      ) : (
+        <View style={{padding: 10}}>
+          <Text>Oops product not found</Text>
+        </View>
+      )}
     </View>
   );
 };

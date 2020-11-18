@@ -15,6 +15,12 @@ export default {
       payload: http(token).get('profile/history'),
     };
   },
+  checkPassword: (token, data) => {
+    return {
+      type: 'POST_CHECK_PASSWORD',
+      payload: http(token).post('profile/check', qs.stringify(data)),
+    };
+  },
   updateProfile: (token, data) => {
     return {
       type: 'PATCH_PROFILE',

@@ -12,9 +12,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // Import Screens
 import Mybags from './MyBags';
-import Search from './SearchStack';
-
-
 
 export default class MyBagStack extends Component {
   searchHandler = () =>{
@@ -26,39 +23,22 @@ export default class MyBagStack extends Component {
         <Stack.Screen
           name="Mybag"
           component={Mybags}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-              backgroundColor: 'transparent',
-            },
-            headerTitle: '',
-            headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
-              </TouchableOpacity>
-            </View>),
-          }}
+          options={{headerShown: false}}
+          // options={{
+          //   headerStyle: {
+          //     elevation: 0,
+          //     shadowOpacity: 0,
+          //     backgroundColor: 'transparent',
+          //   },
+          //   headerTitle: '',
+          //   headerTitleAlign: 'center',
+          //   headerRight: ()=>(<View style={styles.share}>
+          //     <TouchableOpacity onPress={this.searchHandler}>
+          //       <Icon name="magnify" size={25} />
+          //     </TouchableOpacity>
+          //   </View>),
+          // }}
         />
-        {/* <Stack.Screen
-          name="Search"
-          component={Search}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-              backgroundColor: 'transparent',
-            },
-            headerTitle: '',
-            headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
-              </TouchableOpacity>
-            </View>),
-          }}
-        /> */}
       </Stack.Navigator>
     );
   }

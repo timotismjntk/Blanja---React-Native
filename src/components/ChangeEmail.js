@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   View,
   Text,
@@ -10,11 +11,16 @@ import {
   Alert,
 } from 'react-native';
 import {BottomSheet} from 'react-native-btr';
-
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import Toast from 'react-native-root-toast';
 // Import image
 import Line from '../assets/line.png';
 
-export default function ChangeName(props) {
+// import actions
+import profileAction from '../redux/actions/profile';
+
+export default function ChangeEmail(props) {
     const {
         open,
         close,
@@ -29,10 +35,34 @@ export default function ChangeName(props) {
     }, [open]);
 
     const [visible, setVisible] = useState(open);
+    const [message, setMessage] = useState('');
+    const [show, setShow] = useState(false);
 
     const toggleBottomModal = () => {
         setVisible(open);
     };
+
+    const dispatch = useDispatch();
+    const token = useSelector(state=>state.auth.token);
+    const privateData = useSelector(state=>state.profile);
+    const {isError, updated, alertMsg} = privateData;
+
+    useEffect(() => {
+      if (updated) {
+        setMessage(alertMsg);
+        setShow(true);
+        setTimeout(() => {
+          dispatch(profileAction.removeMessage());
+          setShow(false);
+        },1000);
+      }
+    },[updated, dispatch, alertMsg]);
+
+    const changeNameHandler = (values) => {
+      dispatch(profileAction.updateProfile(token, values))
+      .catch((err) => console.log(err.message));
+    };
+
   return (
     <BottomSheet
       visible={visible}
@@ -43,17 +73,50 @@ export default function ChangeName(props) {
           <Image source={Line} />
         </View>
         <Text style={styles.title}>Change Email</Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Email"
-            style={styles.input}
-          />
-        </View>
-        <TouchableOpacity style={styles.btn}>
-            <Text style={styles.btnText}>SAVE</Text>
-        </TouchableOpacity>
+        <Formik
+              initialValues={{ email: '' }}
+              onSubmit={values => changeNameHandler(values)}
+              validationSchema={yup.object().shape({
+                email: yup
+                .string('Required')
+                .email('Invalid Email.')
+                .required(),
+              })}
+            >
+              {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
+          <>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholder="Type your email here"
+                style={styles.input}
+                onChangeText={handleChange('email')}
+              />
+            </View>
+            {touched.email && errors.email &&
+              <Text style={styles.error}>{errors.email}</Text>
+            }
+            <TouchableOpacity
+                style={[styles.btn, styles.submit, !isValid ? {opacity: 0.5} : {opacity : 1}]}
+                disabled={!isValid}
+                onPress={handleSubmit}
+            >
+                <Text style={styles.btnText}>SAVE</Text>
+            </TouchableOpacity>
+          </>
+          )}
+        </Formik>
       </View>
+      <Toast
+        visible={show}
+        position={70}
+        opacity={50}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        backgroundColor="red"
+        // textColor="yellow"
+      >{message}
+      </Toast>
     </BottomSheet>
   );
 }
@@ -92,6 +155,15 @@ const styles = StyleSheet.create({
         width: '100%',
         // paddingLeft: 10,
         fontSize: 16,
+    },
+    error: {
+      position: 'absolute',
+      left: 40,
+      top: 155,
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: 'red',
+      width: '100%',
     },
     btn: {
         flex: 1,

@@ -20,7 +20,8 @@ export default function Address(props) {
     const token = useSelector(state=>state.auth.token);
     useEffect(()=>{
         // alert(openModal)
-        dispatch(addressAction.getPrimaryAddress(token, 1));
+        dispatch(addressAction.getPrimaryAddress(token, 1))
+        .catch((err) => console.log(err.message));
     }, [dispatch, token]);
     const addressState = useSelector(state=>state.address);
     const {data, isLoading} = addressState;

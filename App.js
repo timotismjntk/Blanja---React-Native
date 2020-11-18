@@ -5,7 +5,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
 import {store, persistor} from './src/redux/store';
 import {PersistGate} from 'redux-persist/integration/react';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
+import {RootSiblingParent} from 'react-native-root-siblings';
 
 // Import Screens
 import Main from './src/screens/Main';
@@ -21,9 +22,9 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <SafeAreaProvider>
+          <RootSiblingParent>
             <Main />
-          </SafeAreaProvider>
+          </RootSiblingParent>
         </PersistGate>
       </Provider>
     );

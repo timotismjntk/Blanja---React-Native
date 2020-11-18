@@ -7,7 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import HeaderIcon from '../components/Header';
 
@@ -25,11 +25,7 @@ import Address from '../screens/Address';
 import Setting from '../screens/SettingAccount';
 import Search from './Search';
 
-export default class StackNavigator extends Component {
-  state = {
-    isLogin: false,
-  };
-
+export default class profileStack extends Component {
   searchHandler = () =>{
     this.props.navigation.navigate('Search');
   };
@@ -39,6 +35,7 @@ export default class StackNavigator extends Component {
           <Stack.Screen
           name="Profile"
           component={Myprofile}
+          // options={{headerShown: false}}
           options={{
             headerStyle: {
               elevation: 0,
@@ -47,7 +44,7 @@ export default class StackNavigator extends Component {
             headerTitle: '',
             headerRight: ()=>(<View style={styles.share}>
               <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
+                <Icon name="search" size={25} />
               </TouchableOpacity>
             </View>),
           }}
@@ -63,7 +60,7 @@ export default class StackNavigator extends Component {
             headerTitle: '',
             headerRight: ()=>(<View style={styles.share}>
               <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
+                <Icon name="search" size={25} />
               </TouchableOpacity>
             </View>),
           }}
@@ -80,7 +77,7 @@ export default class StackNavigator extends Component {
             headerTitleAlign: 'center',
             headerRight: ()=>(<View style={styles.share}>
               <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
+                <Icon name="search" size={25} />
               </TouchableOpacity>
             </View>),
           }}
@@ -88,19 +85,6 @@ export default class StackNavigator extends Component {
         <Stack.Screen
           name="Setting"
           component={Setting}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitle: '',
-            headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
-              </TouchableOpacity>
-            </View>),
-          }}
         />
       </Stack.Navigator>
     );

@@ -2,22 +2,30 @@
 import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {View, Text, StyleSheet, Alert, TouchableOpacity} from 'react-native';
+import {View, Text, TextInput, StyleSheet, Alert, TouchableOpacity} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 // Import Screens
 import Search from './Search';
 
 
-export default class MyBagStack extends Component {
+export default class SearchStack extends Component {
+  state = {
+    searchValue: '',
+  }
   searchHandler = () =>{
-      Alert.alert('tes')
-    this.props.navigation.navigate('Search');
+    this.props.navigation.navigate('Shop', {
+      screen: 'ViewAll',
+      params: {
+        id: 1,
+        search: this.state.searchValue,
+      },
+    });
 };
   render() {
     return (
@@ -25,19 +33,20 @@ export default class MyBagStack extends Component {
         <Stack.Screen
           name="Search"
           component={Search}
+          // options={{headerShown: false}}
           options={{
             headerStyle: {
               elevation: 0,
               shadowOpacity: 0,
-              backgroundColor: 'red',
+              backgroundColor: 'transparent',
             },
-            headerTitle: '',
-            headerCenter: ()=>(<Text>hai</Text>),
-            headerRight: ()=>(<View style={styles.magnifyContainer}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="magnify" size={25} />
-              </TouchableOpacity>
-            </View>),
+            headerTitle: ()=>(<View style={styles.magnifyContainer}>
+                 <TouchableOpacity onPress={this.searchHandler}>
+                   <Icon name="search" size={18} color="grey" />
+                 </TouchableOpacity>
+                 <TextInput value={this.state.searchValue} onChangeText={(text)=>{this.setState({searchValue: text})}} placeholder="Search" style={{width: '100%', paddingLeft: 10}} />
+                   </View>),
+              headerTitleAlign: 'center',
           }}
         />
       </Stack.Navigator>
@@ -47,8 +56,17 @@ export default class MyBagStack extends Component {
 
 const styles = StyleSheet.create({
   magnifyContainer: {
-    marginRight: 10,
+    marginRight: -35,
+    marginLeft: 5,
+    paddingLeft: 20,
+    marginTop: 5,
     flex: 1,
-    backgroundColor: 'red',
+    width: 290,
+    // height: 310,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderRadius: 25,
+    backgroundColor: 'white',
   },
 });

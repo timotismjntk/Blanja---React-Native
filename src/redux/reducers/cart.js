@@ -27,6 +27,8 @@ export default (state = initialState, action) => {
         isError: true,
         alertMsg: action.payload.response.data.error,
         info: {},
+        totalSummary: 0,
+        isDelete: false,
       };
     }
     case 'GET_CART_FULFILLED': {
@@ -127,11 +129,13 @@ export default (state = initialState, action) => {
         quantity: state.quantity - 1,
       };
     }
-    case 'CLEAR_MESSAGE': {
+    case 'CLEAR_MESSAGE_CART': {
       return {
         ...state,
-        isError: false,
+        // isError: false,
+        isAdded: false,
         alertMsg: '',
+        isDelete: false,
       };
     }
     default: {

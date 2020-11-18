@@ -17,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 // import components
 import ChangePassword from '../components/ChangePassword';
 import ChangeName from '../components/ChangeName';
+import ChangeEmail from '../components/ChangeEmail';
 import ChangeBirthDate from '../components/ChangeBirthdate';
 
 
@@ -30,13 +31,15 @@ export default function SettingAccount() {
 
     useEffect(()=>{
         if (updated) {
-          dispatch(profileAction.getProfile(token));
+          dispatch(profileAction.getProfile(token))
+          .catch((err) => console.log(err.message));
           dispatch(profileAction.removeMessage());
         }
       },[dispatch, token, updated]);
 
     const [openModalPassword, setOpenModalPassword] = useState(false);
     const [openModalName, setOpenModalName] = useState(false);
+    const [openModalEmail, setOpenModalEmail] = useState(false);
     const [openModalBirthDate, setOpenModalBirthdate] = useState(false);
 
 
@@ -54,6 +57,9 @@ export default function SettingAccount() {
     const changeNameToggle = () => {
         setOpenModalName(true);
     };
+    const changeEmailToggle = () => {
+        setOpenModalEmail(true);
+    };
     const changeBirthdateToggle = () => {
         setOpenModalBirthdate(true);
     };
@@ -70,6 +76,15 @@ export default function SettingAccount() {
         </View>
         <View style={styles.inputContainer}>
             <TextInput placeholder="Full name" value={data.name} editable={false} style={styles.input} />
+        </View>
+        <View style={styles.emailContainer}>
+            <Text style={styles.email}>Full Email</Text>
+            <TouchableOpacity onPress={changeEmailToggle}>
+                <Text style={styles.changeEmail}>Change</Text>
+            </TouchableOpacity>
+        </View>
+        <View style={styles.inputContainer}>
+            <TextInput placeholder="Email" value={data.email} editable={false} style={styles.input} />
         </View>
         <View style={styles.birthDateContainer}>
             <Text style={styles.name}>Birth Date</Text>
@@ -113,6 +128,7 @@ export default function SettingAccount() {
         </View>
         <ChangePassword open={openModalPassword} close={()=>setOpenModalPassword(false)} />
         <ChangeName open={openModalName} close={()=>setOpenModalName(false)} />
+        <ChangeEmail open={openModalEmail} close={()=>setOpenModalEmail(false)} />
         <ChangeBirthDate open={openModalBirthDate} close={()=>setOpenModalBirthdate(false)} />
 
     </ScrollView>
@@ -145,7 +161,7 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingLeft: 10,
         fontSize: 16,
-        color: 'black'
+        color: 'black',
     },
     nameContainer: {
         flexDirection: 'row',
@@ -154,6 +170,16 @@ const styles = StyleSheet.create({
         marginTop: 50,
     },
     name: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    emailContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 50,
+    },
+    email: {
         fontSize: 16,
         fontWeight: 'bold',
     },
@@ -176,6 +202,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     changeName: {
+        color:'grey',
+    },
+    changeEmail: {
         color:'grey',
     },
     changeBirthdate: {

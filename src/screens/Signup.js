@@ -1,22 +1,61 @@
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert} from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
+import {
+    View,
+    ScrollView,
+    Text,
+    StyleSheet,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    Keyboard,
+    KeyboardAvoidingView,
+} from 'react-native';
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import Toast from 'react-native-root-toast';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import actions
+import signUpAction from '../redux/actions/auth';
 
-export default function Loading() {
+export default function SignupUser(props) {
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
+
+    const toLogin = () =>{
+        props.navigation.navigate('Login');
+    };
+
     const [bottom, setBottom] = useState(20);
     const [bottom1, setBottom1] = useState(20);
     const [bottom2, setBottom2] = useState(20);
+    const [message, setMessage] = useState('');
+    const [visible, setVisible] = useState(false);
+
+    useEffect(() => {
+        Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+        // Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+        // cleanup function
+        return () => {
+          Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+        //   Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+        };
+    }, []);
+
+    const _keyboardDidShow = () => {
+        setBottom(45);
+    };
+    // const _keyboardDidHide = () => {
+    //     setBottom(20);
+    // };
 
     const Focus = () =>{
         setBottom(45);
     };
-    const Blur = () =>{
+    const Blur = (name) =>{
         if (name.length > 0) {
             setBottom(45);
         } else {
@@ -26,7 +65,7 @@ export default function Loading() {
     const Focus1 = () =>{
         setBottom1(45);
     };
-    const Blur1 = () =>{
+    const Blur1 = (email) =>{
         if (email.length > 0) {
             setBottom1(45);
         } else {
@@ -36,7 +75,7 @@ export default function Loading() {
     const Focus2 = () =>{
         setBottom2(45);
     };
-    const Blur2 = () =>{
+    const Blur2 = (password) =>{
         if (password.length > 0) {
             setBottom2(45);
         } else {
@@ -44,59 +83,125 @@ export default function Loading() {
         }
     };
 
+    const signUpState = useSelector(state=>state.auth);
+
+    const {isSignup, failSignup, isLoading, alertMsg} = signUpState;
+
     useEffect(() => {
-        // if (name.length > 0) {
-        //     Blur(()=>{
-        //         setBottom(45);
-        //     });
-        //     Alert.alert(name);
-        // }
-    }, [name]);
-
-    const signupHandler = () =>{
-        let result = {
-            name,
-            email,
-            password,
-        };
-        console.log(result);
-    };
-
-
+        if (failSignup) {
+            setMessage(alertMsg);
+            setVisible(true);
+            setTimeout(() =>{
+                dispatch(signUpAction.clearMessage());
+                setVisible(false);
+            }, 5000);
+        }
+        if (isSignup) {
+            setMessage(alertMsg);
+            dispatch(signUpAction.clearMessage());
+            setVisible(true);
+            setTimeout(() =>{
+                setVisible(false);
+            }, 5000);
+        }
+      }, [isSignup, failSignup, alertMsg, dispatch]);
   return (
-    <View style={styles.parent}>
+    <ScrollView contentContainerStyle={styles.parent}>
         <View>
             <Text style={styles.headerSignUp}>Sign up</Text>
         </View>
         <View style={styles.signup}>
-            <View style={styles.inputParent}>
-                <Text onFocus={Focus} style={[styles.text, {bottom: bottom}]}>Name</Text>
-                <TextInput style={[styles.inputText]} onChangeText={(text)=>{setName(text);}} onFocus={Focus} onBlur={ () => Blur() } />
-            </View>
-            <View style={styles.inputParent}>
-                <Text onFocus={Focus1} style={[styles.text, {bottom: bottom1}]}>Email</Text>
-                <TextInput style={[styles.inputText]} onChangeText={(text)=>{setEmail(text);}} onFocus={Focus1} onBlur={ () => Blur1() } />
-            </View>
-            <View style={styles.inputParent}>
-                <Text onFocus={Focus2} style={[styles.text, {bottom: bottom2}]}>Password</Text>
-                <TextInput style={[styles.inputText]} onChangeText={(text)=>{setPassword(text);}} onFocus={Focus2} onBlur={ () => Blur2() } />
-            </View>
-            <View style={styles.loginLink}>
-              <Text style={styles.link}>Already have an account?</Text>
-            </View>
-            <View style={styles.signUpBtn}>
-                <TouchableOpacity onPress={signupHandler} style={styles.btn}>
-                    <Text style={styles.textSignup}>SIGNUP</Text>
-                </TouchableOpacity>
-            </View>
+            <Formik
+            initialValues={{ name: '', email: '', password: ''}}
+            onSubmit={values => dispatch(signUpAction.signUp(values))
+                .catch((err) => console.log(err.message))}
+            validationSchema={yup.object().shape({
+            name: yup
+                .string()
+                .required('Required'),
+            email: yup
+                .string('Required')
+                .email('Invalid Email.')
+                .required(),
+            password: yup
+                .string()
+                .min(6, 'Too Short, minimal password length must be at least 6 characters')
+                .required('Required'),
+            })}
+            >
+            {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
+                <>
+                    <View style={[styles.inputParent, touched.name && errors.name ? {borderWidth: 1, borderColor: 'red'} : touched.name && {borderWidth: 1, borderColor: 'green'}]}>
+                        <Text onFocus={Focus} style={[styles.text, {bottom: bottom}]}>Name</Text>
+                        <TextInput
+                            style={[styles.inputText]}
+                            onChangeText={handleChange('name')}
+                            onBlur={() => {setFieldTouched('name'); Blur(values.name);}}
+                            onFocus={Focus}
+                        />
+                    </View>
+                    {touched.name && errors.name &&
+                        <Text style={styles.error}>{errors.name}</Text>
+                    }
+                    <View style={[styles.inputParent, failSignup ? {borderWidth: 1, borderColor: 'red'} : touched.email && errors.email ? {borderWidth: 1, borderColor: 'red'} : touched.email && {borderWidth: 1, borderColor: 'green'}]}>
+                        <Text onFocus={Focus1} style={[styles.text, {bottom: bottom1}]}>Email</Text>
+                        <TextInput
+                            style={[styles.inputText]}
+                            onChangeText={handleChange('email')}
+                            onBlur={() => {setFieldTouched('email'); Blur1(values.email);}}
+                            onFocus={Focus1}
+                        />
+                    </View>
+                    {touched.email && errors.email &&
+                        <Text style={styles.error}>{errors.email}</Text>
+                    }
+                    <View style={[styles.inputParent, touched.password && errors.password ? {borderWidth: 1, borderColor: 'red'}  : touched.password && {borderWidth: 1, borderColor: 'green'}]}>
+                        <Text onFocus={Focus2} style={[styles.text, {bottom: bottom2}]}>Password</Text>
+                        <TextInput
+                            style={[styles.inputText]}
+                            value={values.password}
+                            onChangeText={handleChange('password')}
+                            onBlur={() => {setFieldTouched('password'); Blur2(values.password);}}
+                            onFocus={Focus2}
+                        />
+                    </View>
+                    {touched.password && errors.password &&
+                        <Text style={styles.error}>{errors.password}</Text>
+                    }
+                    <TouchableOpacity style={styles.loginLink} onPress={toLogin}>
+                        <Text style={styles.link}>Already have an account?</Text>
+                        <Icon name="long-arrow-right" size={20} color="rgba(219, 48, 34, 1)" />
+                    </TouchableOpacity>
+                    <View style={styles.signUpBtn}>
+                        <TouchableOpacity
+                            disabled={!isValid}
+                            onPress={handleSubmit}
+                            style={[styles.btn, styles.submit, !isValid ? {opacity: 0.5} : {opacity : 1}]}
+                        >
+                            <Text style={styles.textSignup}>SIGNUP</Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
+            )}
+            </Formik>
+            <Toast
+                visible={visible}
+                position={40}
+                shadow={false}
+                animation={true}
+                hideOnPress={true}
+                // textColor="yellow"
+            >
+            {message}
+            </Toast>
         </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
     parent: {
-        flex: 1,
+        // flex: 1,
         paddingTop: 10,
         paddingLeft: 20,
         paddingRight: 20,
@@ -122,6 +227,7 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         paddingLeft: 20,
         marginTop: 10,
+        borderRadius: 5,
         // marginBottom: 25,
         backgroundColor: 'white',
     },
@@ -142,9 +248,20 @@ const styles = StyleSheet.create({
         color: 'grey',
         // top: 10,
     },
+    error: {
+        // position: 'absolute',
+        // left: 10,
+        // top: 45,
+        fontSize: 12,
+        color: 'red',
+        width: '100%',
+    },
     loginLink: {
         marginTop: 20,
-        alignItems: 'flex-end',
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
       },
       link: {
         fontSize: 16,
@@ -152,6 +269,7 @@ const styles = StyleSheet.create({
         color: 'black',
         textDecorationStyle: 'solid',
         textDecorationColor: 'black',
+        marginRight: 10,
       },
       signUpBtn: {
         marginTop: 40,

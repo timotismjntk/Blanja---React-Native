@@ -11,6 +11,9 @@ import {
   Alert,
 } from 'react-native';
 import {BottomSheet} from 'react-native-btr';
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import Toast from 'react-native-root-toast';
 
 // Import image
 import Line from '../assets/line.png';
@@ -33,7 +36,8 @@ export default function ChangeName(props) {
     }, [open]);
 
     const [visible, setVisible] = useState(open);
-    const [name, setName] = useState('');
+    const [message, setMessage] = useState('');
+    const [show, setShow] = useState(false);
 
     const toggleBottomModal = () => {
         setVisible(open);
@@ -42,8 +46,23 @@ export default function ChangeName(props) {
     const dispatch = useDispatch();
 
     const token = useSelector(state=>state.auth.token);
-    const changeNameHandler = () => {
-      dispatch(profileAction.updateProfile(token, {name}));
+    const privateData = useSelector(state=>state.profile);
+    const {isError, updated, alertMsg} = privateData;
+
+    useEffect(() => {
+      if (updated) {
+        setMessage(alertMsg);
+        setShow(true);
+        setTimeout(() => {
+          dispatch(profileAction.removeMessage());
+          setShow(false);
+        },1000);
+      }
+    },[updated, dispatch, alertMsg]);
+
+    const changeNameHandler = (values) => {
+      dispatch(profileAction.updateProfile(token, values))
+      .catch((err) => console.log(err.message));
     };
 
   return (
@@ -56,19 +75,49 @@ export default function ChangeName(props) {
           <Image source={Line} />
         </View>
         <Text style={styles.title}>Change Name</Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Full Name"
-            style={styles.input}
-            value={name}
-            onChangeText={(text) => {setName(text);}}
-          />
-        </View>
-        <TouchableOpacity style={styles.btn} onPress={changeNameHandler}>
-            <Text style={styles.btnText}>SAVE</Text>
-        </TouchableOpacity>
+        <Formik
+              initialValues={{ name: '' }}
+              onSubmit={values => changeNameHandler(values)}
+              validationSchema={yup.object().shape({
+              name: yup
+                  .string()
+                  .required('Required'),
+              })}
+            >
+              {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
+          <>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholder="Full Name"
+                style={styles.input}
+                onChangeText={handleChange('name')}
+              />
+            </View>
+            {touched.name && errors.name &&
+              <Text style={styles.error}>{errors.name}</Text>
+            }
+            <TouchableOpacity
+                style={[styles.btn, !isValid ? [styles.btn, {opacity: 0.5}] : [styles.btn, {opacity : 1}]]}
+                disabled={!isValid}
+                onPress={handleSubmit}
+            >
+              <Text style={styles.btnText}>SAVE</Text>
+            </TouchableOpacity>
+          </>
+          )}
+        </Formik>
       </View>
+      <Toast
+        visible={show}
+        position={70}
+        opacity={50}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        backgroundColor='red'
+        // textColor="yellow"
+      >{message}
+      </Toast>
     </BottomSheet>
   );
 }
@@ -107,6 +156,15 @@ const styles = StyleSheet.create({
         width: '100%',
         // paddingLeft: 10,
         fontSize: 16,
+    },
+    error: {
+      position: 'absolute',
+      left: 40,
+      top: 155,
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: 'red',
+      width: '100%',
     },
     btn: {
         flex: 1,

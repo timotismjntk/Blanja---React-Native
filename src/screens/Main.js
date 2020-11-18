@@ -7,28 +7,50 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import BottomTabs from '../screens/BottomTabs';
 import Login from '../screens/Login';
+import SignUp from '../screens/Signup';
 import Search from '../screens/SearchStack';
 import Success from '../screens/Success';
 import Checkout from '../screens/Checkout';
 import ProductDetail from '../screens/ProductDetail';
 import Address from '../screens/Address';
 import ChangeAddress from '../screens/ChangeAddress';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
+import FilterProduct from './FilterProduct';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Toast from 'react-native-root-toast';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createStackNavigator();
 
-const Main = (props) => {
-  const searchHandler = () =>{
-  props.navigation.navigate('Search');
-  };
+const Main = () => {
+  const [message, setMessage] = useState('');
+  const [visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
 
+  const searchHandler = () =>{
+    // navigation.navigate('ProductDetail');
+   };
+
   const LoginState = useSelector(state=>state.auth);
 
-  const {isLogin} = LoginState;
+    const {isLogin, isError, isLoading, alertMsg} = LoginState;
+    useEffect(() => {
+      if (isError) {
+          setMessage('Wrong Email or Password');
+          setVisible(true);
+          setTimeout(() =>{
+              setVisible(false);
+          }, 5000);
+      }
+      if (isLogin) {
+          alertMsg.length ? (setVisible(true), setMessage(alertMsg)) : null;
+          setTimeout(() =>{
+            setVisible(false);
+          }, 5000);
+      }
+    }, [isLogin, isError, isLoading, alertMsg, dispatch]);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -39,9 +61,28 @@ const Main = (props) => {
       {!isLogin ? (
           <Stack.Navigator>
             <Stack.Screen
-                options={{headerShown: false}}
-                name="Login"
-                component={Login}
+            options={{
+              headerStyle: {
+                elevation: 0,
+                shadowOpacity: 0,
+                // backgroundColor: 'red',
+              },
+              headerTitle: 'Blanja',
+                }}
+            name="SignUp"
+            component={SignUp}
+            />
+            <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{
+              headerStyle: {
+                elevation: 0,
+                shadowOpacity: 0,
+                // backgroundColor: 'red',
+              },
+              headerTitle: '',
+                }}
             />
           </Stack.Navigator>
       ) : (
@@ -76,94 +117,122 @@ const Main = (props) => {
             headerTransparent: true,
             headerTitle: '' }}
             component={BottomTabs} />
-          <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetail}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitle: 'Short Dress',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity>
-                <Icon name="share-variant" size={25} />
-              </TouchableOpacity>
-            </View>),
-            headerTitleAlign: 'center',
-            // headerTitleStyle: { textAlign: 'center', marginLeft: -10 },
-            // headerBackImage: () => <HeaderIcon />,
-          }}
-        />
-        <Stack.Screen
-          name="Checkout"
-          component={Checkout}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitle: 'Checkout',
-            headerTitleAlign: 'center',
-            // headerBackImage: () => <HeaderIcon />,
-          }}
-        />
-        <Stack.Screen
-          name="Success"
-          component={Success}
-          options={{
-            headerTransparent: true,
-            headerTitle: '',
-            // headerTitleAlign: 'center',
-            headerLeft: '',
-          }}
-        />
-        <Stack.Screen
-          name="Address"
-          component={Address}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitle: 'Shipping Address',
-            headerTitleAlign: 'center',
-          }}
-        />
-        <Stack.Screen
-          name="ChangeAddress"
-          component={ChangeAddress}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitle: 'Change Address',
-            headerTitleAlign: 'center',
-          }}
-        />
-        <Stack.Screen
-          name="Search"
-          component={Search}
-          options={{
-            headerStyle: {
-              elevation: 0,
-              shadowOpacity: 0,
-              backgroundColor: 'transparent',
-            },
-            headerTitle: ()=>(<View style={styles.magnifyContainer}>
-              <TouchableOpacity onPress={searchHandler}>
-                <Icon name="magnify" size={25} color="grey" />
-              </TouchableOpacity>
-              <TextInput placeholder="Search" style={{width: '100%'}} />
+            <Stack.Screen
+              name="ProductDetail"
+              component={ProductDetail}
+              options={{
+                headerStyle: {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                },
+                headerTitle: '',
+                headerRight: ()=>(<View style={styles.share}>
+                  <TouchableOpacity>
+                    <Icon name="share-variant" size={25} />
+                  </TouchableOpacity>
                 </View>),
-            // headerTitleAlign: 'center',
-          }}
-        />
+                headerTitleAlign: 'center',
+                // headerTitleStyle: { textAlign: 'center', marginLeft: -10 },
+                // headerBackImage: () => <HeaderIcon />,
+              }}
+            />
+            <Stack.Screen
+              name="Checkout"
+              component={Checkout}
+              options={{
+                headerStyle: {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                },
+                headerTitle: 'Checkout',
+                headerTitleAlign: 'center',
+                // headerBackImage: () => <HeaderIcon />,
+              }}
+            />
+            <Stack.Screen
+              name="Success"
+              component={Success}
+              options={{
+                headerTransparent: true,
+                headerTitle: '',
+                // headerTitleAlign: 'center',
+                headerLeft: '',
+              }}
+            />
+            <Stack.Screen
+              name="Address"
+              component={Address}
+              options={{
+                headerStyle: {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                },
+                headerTitle: 'Shipping Address',
+                headerTitleAlign: 'center',
+              }}
+            />
+            <Stack.Screen
+              name="ChangeAddress"
+              component={ChangeAddress}
+              options={{
+                headerStyle: {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                },
+                headerTitle: 'Change Address',
+                headerTitleAlign: 'center',
+              }}
+            />
+            <Stack.Screen
+              name="Search"
+              component={Search}
+              options={{headerShown: false}}
+              // options={({ navigation }) => ({
+              //   headerStyle: {
+              //     elevation: 0,
+              //     shadowOpacity: 0,
+              //     backgroundColor: 'transparent',
+              //   },
+              //   headerTitle: '',
+              //   // headerTitle: ()=>(<View style={styles.magnifyContainer}>
+              //   //   <TouchableOpacity onPress={()=>{navigation.navigate('alProduct');}}>
+              //   //     <Icon name="search" size={18} color="grey" />
+              //   //   </TouchableOpacity>
+              //   //   <TextInput placeholder="Search" style={{width: '100%'}} />
+              //   //     </View>),
+              //   // headerTitleAlign: 'center',
+              // })}
+            />
+            <Stack.Screen
+            name="FilterProduct"
+            component={FilterProduct}
+            options={{
+              // headerStyle: {
+              //   elevation: 0,
+              //   shadowOpacity: 0,
+              //   backgroundColor: 'transparent',
+              // },
+              headerTitle: 'Filters',
+              headerTitleAlign: 'center',
+              // headerRight: ()=>(<View style={styles.share}>
+              //   <TouchableOpacity onPress={searchHandler}>
+              //     <Icon name="search" size={20} />
+              //   </TouchableOpacity>
+              // </View>),
+              }}
+            />
           </Stack.Navigator>
           {/* <Search /> */}
         </>
       )}
+      <Toast
+            visible={visible}
+            position={40}
+            shadow={false}
+            animation={true}
+            hideOnPress={true}
+            // textColor="yellow"
+        >{message}</Toast>
     </NavigationContainer>
   );
 };

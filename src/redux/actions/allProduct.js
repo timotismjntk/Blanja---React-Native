@@ -2,10 +2,10 @@
 import http from '../../helpers/http';
 
 export default {
-  getProduct: () => {
+  getProduct: (data = '') => {
     return {
       type: 'GET_PRODUCT',
-      payload: http().get('public/'),
+      payload: http().get(`public/product/new?search=${data}`),
     };
   },
 };
