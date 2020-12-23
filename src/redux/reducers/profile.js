@@ -83,6 +83,28 @@ export default (state = initialState, action) => {
         updated: true,
       };
     }
+    case 'RESET_PASSWORD_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+      };
+    }
+    case 'RESET_PASSWORD_REJECTED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        alertMsg: 'There is an error at request data',
+      };
+    }
+    case 'RESET_PASSWORD_FULFILLED': {
+      return {
+        ...state,
+        isLoading: false,
+        alertMsg: 'Profile updated',
+        updated: true,
+      };
+    }
     case 'PATCH_PROFILE_IMAGE_PENDING': {
       return {
         ...state,
@@ -111,6 +133,7 @@ export default (state = initialState, action) => {
         ...state,
         isLoading: false,
         updated: false,
+        isError: false,
         alertMsg: '',
         isUploaded: false,
         isMatch: false,

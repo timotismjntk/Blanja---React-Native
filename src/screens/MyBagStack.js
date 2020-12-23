@@ -7,7 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 // Import Screens
@@ -23,21 +23,21 @@ export default class MyBagStack extends Component {
         <Stack.Screen
           name="Mybag"
           component={Mybags}
-          options={{headerShown: false}}
-          // options={{
-          //   headerStyle: {
-          //     elevation: 0,
-          //     shadowOpacity: 0,
-          //     backgroundColor: 'transparent',
-          //   },
-          //   headerTitle: '',
-          //   headerTitleAlign: 'center',
-          //   headerRight: ()=>(<View style={styles.share}>
-          //     <TouchableOpacity onPress={this.searchHandler}>
-          //       <Icon name="magnify" size={25} />
-          //     </TouchableOpacity>
-          //   </View>),
-          // }}
+          // options={{headerShown: false}}
+          options={{
+            headerStyle: {
+              elevation: 0,
+              shadowOpacity: 0,
+              backgroundColor: 'white',
+            },
+            headerTitle: '',
+            headerTitleAlign: 'center',
+            headerRight: ()=>(<View style={styles.share}>
+              <TouchableOpacity onPress={this.searchHandler}>
+                <Icon name="search" size={25} />
+              </TouchableOpacity>
+            </View>),
+          }}
         />
       </Stack.Navigator>
     );

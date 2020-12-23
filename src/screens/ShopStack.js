@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 // Import Screens
 import Category from './Category';
 import Search from './Search';
-import ViewAll from './ViewProduct';
+import Catalog from './Catalog';
 import FilterProduct from './FilterProduct';
 
 
@@ -35,11 +35,14 @@ export default class MyBagStack extends Component {
             },
             headerTitle: 'Categories',
             headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity>
-                <Icon name="search" size={25} />
+            headerLeft: ()=> (
+              <TouchableOpacity style={{marginLeft: 10}} onPress={() => this.props.navigation.goBack()}>
+                <Icon name="chevron-left" color="rgba(0,0,0,0.7)" size={25} />
               </TouchableOpacity>
-            </View>),
+            ),
+            headerRight: ()=>(<TouchableOpacity style={styles.icon} onPress={this.searchHandler}>
+              <Icon name="search" size={25} />
+            </TouchableOpacity>),
           }}
         />
         <Stack.Screen
@@ -53,16 +56,14 @@ export default class MyBagStack extends Component {
             },
             headerTitle: '',
             headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="search" size={25} />
-              </TouchableOpacity>
-            </View>),
+            headerRight: ()=>(<TouchableOpacity style={styles.icon} onPress={this.searchHandler}>
+              <Icon name="search" size={25} />
+            </TouchableOpacity>),
           }}
         />
         <Stack.Screen
-          name="ViewAll"
-          component={ViewAll}
+          name="Catalog"
+          component={Catalog}
           options={{
             headerStyle: {
               elevation: 0,
@@ -71,11 +72,9 @@ export default class MyBagStack extends Component {
             },
             headerTitle: '',
             headerTitleAlign: 'center',
-            headerRight: ()=>(<View style={styles.share}>
-              <TouchableOpacity onPress={this.searchHandler}>
-                <Icon name="search" size={25} />
-              </TouchableOpacity>
-            </View>),
+            headerRight: ()=>(<TouchableOpacity style={styles.icon} onPress={this.searchHandler}>
+              <Icon name="search" size={25} />
+            </TouchableOpacity>),
           }}
         />
       </Stack.Navigator>
@@ -90,7 +89,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  share: {
-    marginRight: 10,
+  icon: {
+    // marginRight: 15,
+    padding: 10,
+    paddingHorizontal: 20,
+    // backgroundColor: 'red',
   },
 });

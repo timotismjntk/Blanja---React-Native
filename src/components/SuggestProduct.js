@@ -15,49 +15,6 @@ import {API_URL} from '@env';
 // import helpers
 import convertToRupiah from '../helpers/rupiahConverter';
 
-const items = [
-    {
-        title:'Item 1',
-        text: 'Text 1',
-        image: Products,
-        storeName: 'Zalora',
-        productName: 'Blouse',
-        price: '3000',
-    },
-    {
-        title:'Item 2',
-        text: 'Text 2',
-        image: Products,
-        storeName: 'Zalora',
-        productName: 'Blouse',
-        price: '3000',
-    },
-    {
-        title:'Item 3',
-        text: 'Text 3',
-        image: Products,
-        storeName: 'Zalora',
-        productName: 'Blouse',
-        price: '3000',
-    },
-    {
-        title:'Item 4',
-        text: 'Text 4',
-        image: Products,
-        storeName: 'Zalora',
-        productName: 'Blouse',
-        price: '3000',
-    },
-    {
-        title:'Item 5',
-        text: 'Text 5',
-        image: Products,
-        storeName: 'Zalora',
-        productName: 'Blouse',
-        price: '3000',
-    },
-  ];
-
 export default function SuggestProduct() {
     const navigation = useNavigation();
 
@@ -65,7 +22,8 @@ export default function SuggestProduct() {
 
     useEffect(()=>{
         dispatch(popularProductAction.getPopularProduct());
-    }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const detailProduct = (itemId, itemName) =>{
         navigation.navigate('ProductDetail', {

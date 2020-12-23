@@ -50,13 +50,15 @@ export default function ChangeEmail(props) {
     useEffect(() => {
       if (updated) {
         setMessage(alertMsg);
+        close();
         setShow(true);
         setTimeout(() => {
           dispatch(profileAction.removeMessage());
           setShow(false);
         },1000);
       }
-    },[updated, dispatch, alertMsg]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[updated]);
 
     const changeNameHandler = (values) => {
       dispatch(profileAction.updateProfile(token, values))

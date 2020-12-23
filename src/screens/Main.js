@@ -8,18 +8,24 @@ import {createStackNavigator} from '@react-navigation/stack';
 import BottomTabs from '../screens/BottomTabs';
 import Login from '../screens/Login';
 import SignUp from '../screens/Signup';
+import ForgotPassword from '../screens/ForgotPassword';
+import VerifyResetCode from '../screens/VerifyResetCode';
+import ResetPassword from '../screens/ResetPassword';
 import Search from '../screens/SearchStack';
 import Success from '../screens/Success';
 import Checkout from '../screens/Checkout';
 import ProductDetail from '../screens/ProductDetail';
 import Address from '../screens/Address';
 import ChangeAddress from '../screens/ChangeAddress';
+import AddAddress from '../screens/AddAddress';
 import SplashScreen from 'react-native-splash-screen';
 import FilterProduct from './FilterProduct';
 
 import Toast from 'react-native-root-toast';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+import authAction from '../redux/actions/auth';
 
 const Stack = createStackNavigator();
 
@@ -28,10 +34,6 @@ const Main = () => {
   const [visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
-
-  const searchHandler = () =>{
-    // navigation.navigate('ProductDetail');
-   };
 
   const LoginState = useSelector(state=>state.auth);
 
@@ -47,14 +49,16 @@ const Main = () => {
       if (isLogin) {
           alertMsg.length ? (setVisible(true), setMessage(alertMsg)) : null;
           setTimeout(() =>{
+            dispatch(authAction.removeMessage());
             setVisible(false);
           }, 5000);
       }
-    }, [isLogin, isError, isLoading, alertMsg, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLogin, isError]);
 
   useEffect(() => {
     SplashScreen.hide();
-}, []);
+  }, []);
 
   return (
     <NavigationContainer>
@@ -73,6 +77,29 @@ const Main = () => {
             component={SignUp}
             />
             <Stack.Screen
+            options={{
+              headerStyle: {
+                elevation: 0,
+                shadowOpacity: 0,
+                // backgroundColor: 'red',
+              },
+              headerTitle: '',
+                }}
+            name="ForgotPassword"
+            component={ForgotPassword}
+            />
+            <Stack.Screen
+            options={{
+              headerStyle: {
+                elevation: 0,
+                shadowOpacity: 0,
+              },
+              headerTitle: '',
+                }}
+            name="VerifyResetCode"
+            component={VerifyResetCode}
+            />
+            <Stack.Screen
             name="Login"
             component={Login}
             options={{
@@ -80,6 +107,17 @@ const Main = () => {
                 elevation: 0,
                 shadowOpacity: 0,
                 // backgroundColor: 'red',
+              },
+              headerTitle: '',
+                }}
+            />
+            <Stack.Screen
+            name="ResetPassword"
+            component={ResetPassword}
+            options={{
+              headerStyle: {
+                elevation: 0,
+                shadowOpacity: 0,
               },
               headerTitle: '',
                 }}
@@ -128,7 +166,7 @@ const Main = () => {
                 headerTitle: '',
                 headerRight: ()=>(<View style={styles.share}>
                   <TouchableOpacity>
-                    <Icon name="share-variant" size={25} />
+                    <Icon name="share-alt" color="grey" size={23} />
                   </TouchableOpacity>
                 </View>),
                 headerTitleAlign: 'center',
@@ -180,6 +218,18 @@ const Main = () => {
                   shadowOpacity: 0,
                 },
                 headerTitle: 'Change Address',
+                headerTitleAlign: 'center',
+              }}
+            />
+            <Stack.Screen
+              name="AddAddress"
+              component={AddAddress}
+              options={{
+                headerStyle: {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                },
+                headerTitle: 'Adding Shipping Address',
                 headerTitleAlign: 'center',
               }}
             />
@@ -252,5 +302,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 25,
     backgroundColor: 'white',
+  },
+  share: {
+    marginRight: 10,
+    marginTop: 5,
   },
 });

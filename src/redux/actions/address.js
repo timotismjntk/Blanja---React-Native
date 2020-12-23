@@ -1,18 +1,12 @@
-/* eslint-disable prettier/prettier */
 import http from '../../helpers/http';
-// import { createAsyncAction } from 'redux-promise-middleware-actions';
-// import qs from 'querystring';
+import qs from 'query-string';
 
 export default {
-  getAddress: async (token) => {
-      try {
-        await {
-            type: 'GET_ADDRESS',
-            payload: http(token).get('users/address/'),
-          };
-      } catch (e) {
-
-      }
+  getAddress: (token) => {
+    return {
+      type: 'GET_ADDRESS',
+      payload: http(token).get('users/address/'),
+    };
   },
   getPrimaryAddress: (token, id) => {
     return {
@@ -20,10 +14,22 @@ export default {
       payload: http(token).get(`users/address/${id}`),
     };
   },
+  selectAddress: (token, id) => {
+    return {
+      type: 'SELECT_ADDRESS',
+      payload: http(token).get(`users/address/choose/primary/${id}`),
+    };
+  },
+  getDetailAddress: (token, id) => {
+    return {
+      type: 'DETAIL_ADDRESS',
+      payload: http(token).get(`users/address/get/${id}`),
+    };
+  },
   createAddress: (token, data) => {
     return {
       type: 'POST_ADDRESS',
-    //   payload: http(token).post('users/address', qs.stringify(data)),
+      payload: http(token).post('users/address', qs.stringify(data)),
     };
   },
   deleteAddress: (token, id) => {
@@ -33,12 +39,13 @@ export default {
       payload: http(token).delete(`users/address/${id}`),
     };
   },
-  patchAddress: (token, data, product_id) => {
+  patchAddress: (token, data, id) => {
     return {
       type: 'PATCH_ADDRESS',
-    //   payload: http(token).put('user/address/', qs.stringify(data), {
-    //     product_id,
-    //   }),
+      payload: http(token).patch(`users/address/${id}`, qs.stringify(data)),
     };
   },
+  removeMessage: () => ({
+    type: 'REMOVING_MESSAGE_ADDRESS',
+  }),
 };

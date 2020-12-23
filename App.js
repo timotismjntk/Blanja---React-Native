@@ -10,7 +10,7 @@ import {RootSiblingParent} from 'react-native-root-siblings';
 
 // Import Screens
 import Main from './src/screens/Main';
-import ViewProduct from './src/screens/ViewProduct';
+import ViewProduct from './src/screens/Catalog';
 import FilterProduct from './src/screens/FilterProduct';
 
 export default class App extends Component {

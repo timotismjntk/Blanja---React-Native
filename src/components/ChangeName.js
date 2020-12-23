@@ -53,12 +53,14 @@ export default function ChangeName(props) {
       if (updated) {
         setMessage(alertMsg);
         setShow(true);
+        close();
         setTimeout(() => {
           dispatch(profileAction.removeMessage());
           setShow(false);
-        },1000);
+        },600);
       }
-    },[updated, dispatch, alertMsg]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[updated]);
 
     const changeNameHandler = (values) => {
       dispatch(profileAction.updateProfile(token, values))
@@ -115,7 +117,6 @@ export default function ChangeName(props) {
         animation={true}
         hideOnPress={true}
         backgroundColor='red'
-        // textColor="yellow"
       >{message}
       </Toast>
     </BottomSheet>

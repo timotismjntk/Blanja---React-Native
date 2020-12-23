@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {combineReducers} from 'redux';
 
 import auth from './auth';
@@ -10,7 +9,8 @@ import cart from './cart';
 import detailproduct from './detailProduct';
 import categoryProduct from './categoryProduct';
 import address from './address';
-
+import orders from './orders';
+import checkout from './checkout';
 
 export default combineReducers({
   auth,
@@ -22,6 +22,8 @@ export default combineReducers({
   detailproduct,
   categoryProduct,
   address,
+  orders,
+  checkout,
 });
 
 

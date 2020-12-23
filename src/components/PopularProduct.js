@@ -81,27 +81,39 @@ export default function PopularProduct() {
 
     const renderItem = ({item, index}) => {
         return (
-            <>
-                {item.total_rating >= 3 ? <TouchableOpacity key={item.id.toString().concat(item.name)} onPress={()=>{detailProduct(item.id, item.name)}}>
+            <TouchableOpacity key={item.id.toString().concat(item.name)} onPress={()=>{detailProduct(item.id, item.category_name)}}>
                 <View style={styles.card}>
                     <Image source={{uri: API_URL + item.url}} style={styles.image} />
                     <View style={styles.cardContainer}>
                         <Rating number={item.total_rating} />
-                        <Text style={styles.store}>Zalora</Text>
-                        <Text style={styles.product}>{item.name}</Text>
+                        <Text style={styles.store}>{item.store_name ? item.store_name : 'Zalora'}</Text>
+                        <Text style={styles.product}>{item.name.length > 30 ? item.name.slice(0, 25) + '...' : item.name}</Text>
                         <Text style={styles.price}>{convertToRupiah(item.price)}</Text>
                     </View>
                 </View>
-            </TouchableOpacity> : null}
-            </>
+            </TouchableOpacity>
         );
     };
+
+    const viewAll = () =>{
+        navigation.navigate('Shop', {
+            screen: 'Catalog',
+            params: {
+              id: 1,
+              search: '',
+              categoryName: 'Popular',
+            },
+        });
+    };
+
   return (
     <View>
         <View style={styles.parent}>
             <View style={styles.text}>
                 <Text style={styles.textNew}>Popular</Text>
-                <Text>View all</Text>
+                <TouchableOpacity onPress={viewAll}>
+                    <Text>View all</Text>
+                </TouchableOpacity>
             </View>
             <Text style={styles.textInfo}>You’ve never seen it before!</Text>
         </View>

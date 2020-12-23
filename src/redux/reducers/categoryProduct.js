@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 const initialState = {
-  data: {},
-  info: {},
+  data: [],
   isLoading: false,
   isError: false,
   alertMsg: '',

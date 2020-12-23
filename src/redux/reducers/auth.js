@@ -1,12 +1,15 @@
-/* eslint-disable no-undef */
-/* eslint-disable prettier/prettier */
 const initialState = {
   isLogin: false,
   isSignup: false,
   failSignup: false,
   isError: false,
+  isLoading: false,
   token: '',
   alertMsg: '',
+  isMatch: false,
+  resetCodeData: {},
+  isVerify: false,
+  isErrorVerify: false,
 };
 
 export default (state = initialState, action) => {
@@ -26,11 +29,9 @@ export default (state = initialState, action) => {
       };
     }
     case 'AUTH_USER_FULFILLED': {
-      // console.log(action.payload.data.message);
-        // localStorage.setItem('token', action.payload.data.message);
       return {
         ...state,
-        token: action.payload.data.message,
+        token: action.payload.data.token,
         isLoading: false,
         isLogin: true,
         alertMsg: 'Successfully login',
@@ -51,14 +52,60 @@ export default (state = initialState, action) => {
       };
     }
     case 'SIGNUP_USER_FULFILLED': {
-      // console.log(action.payload.data.message);
-        // localStorage.setItem('token', action.payload.data.message);
       return {
         ...state,
         isLoading: false,
         isSignup: true,
         failSignup: false,
         alertMsg: 'Signup Successfully',
+      };
+    }
+    case 'GET_RESET_CODE_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+        alertMsg: '',
+      };
+    }
+    case 'GET_RESET_CODE_REJECTED': {
+      return {
+        ...state,
+        isMatch: false,
+        isLoading: false,
+        isErrorResetCode: true,
+        alertMsg: action.payload.response.data.message,
+      };
+    }
+    case 'GET_RESET_CODE_FULFILLED': {
+      return {
+        ...state,
+        isMatch: true,
+        isLoading: false,
+        isErrorResetCode: false,
+        resetCodeData: action.payload.data.result,
+      };
+    }
+    case 'VERIFY_RESET_CODE_PENDING': {
+      return {
+        ...state,
+        isVerify: false,
+        isErrorVerify: false,
+      };
+    }
+    case 'VERIFY_RESET_CODE_REJECTED': {
+      return {
+        ...state,
+        isVerify: false,
+        isErrorVerify: true,
+        alertMsg: action.payload.response.data.message,
+      };
+    }
+    case 'VERIFY_RESET_CODE_FULFILLED': {
+      return {
+        ...state,
+        isVerify: true,
+        isErrorVerify: false,
+        resetCodeData: action.payload.data.result,
       };
     }
     case 'persist/REHYDRATED': {
@@ -69,7 +116,6 @@ export default (state = initialState, action) => {
       };
     }
     case 'LOGOUT_USER': {
-      //   localStorage.removeItem('token');
       return {
         isLogin: false,
         token: '',
@@ -77,14 +123,31 @@ export default (state = initialState, action) => {
         alertMsg: 'Logout Successfully',
       };
     }
+    case 'REMOVING_MESSAGE': {
+      return {
+        ...state,
+        isSignup: false,
+        failSignup: false,
+        isError: false,
+        isLoading: false,
+        alertMsg: '',
+        isMatch: false,
+        resetCodeData: {},
+        isVerify: false,
+        isErrorVerify: false,
+      };
+    }
     case 'CLEAR_MESSAGE_AUTH': {
       return {
         ...state,
-        alertMsg: '',
-        isError: false,
         isSignup: false,
-        isLogin: false,
         failSignup: false,
+        isError: false,
+        isLoading: false,
+        alertMsg: '',
+        isMatch: false,
+        isVerify: false,
+        isErrorVerify: false,
       };
     }
     default: {

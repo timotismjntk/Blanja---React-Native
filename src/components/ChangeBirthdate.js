@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
@@ -13,6 +12,8 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {BottomSheet} from 'react-native-btr';
 import moment from 'moment';
+import Toast from 'react-native-root-toast';
+
 // Import image
 import Line from '../assets/line.png';
 
@@ -44,11 +45,30 @@ export default function ChangeName(props) {
     const token = useSelector(state=>state.auth.token);
     const changeHandler = () => {
       if (results.length) {
+        close();
         dispatch(profileAction.updateProfile(token, {dateOfBirth: results}));
       } else {
         console.log('Choose Your Birth date');
       }
     };
+
+    const [message, setMessage] = useState('');
+    const privateData = useSelector(state=>state.profile);
+    const {isError, updated, alertMsg} = privateData;
+
+    useEffect(() => {
+      if (updated) {
+        setMessage(alertMsg);
+        setShow(true);
+        close();
+        setTimeout(() => {
+          dispatch(profileAction.removeMessage());
+          setShow(false);
+        },600);
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[updated]);
+
 
     const toggleBottomModal = () => {
         setVisible(open);
@@ -104,6 +124,17 @@ export default function ChangeName(props) {
             <Text style={styles.btnText}>SAVE</Text>
         </TouchableOpacity>
       </View>
+      <Toast
+        visible={show}
+        position={70}
+        opacity={50}
+        shadow={true}
+        animation={true}
+        hideOnPress={true}
+        backgroundColor='red'
+        // textColor="yellow"
+      >{message}
+      </Toast>
     </BottomSheet>
   );
 }

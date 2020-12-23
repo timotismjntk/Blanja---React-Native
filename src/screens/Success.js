@@ -4,7 +4,11 @@ import {View, TouchableOpacity, ScrollView, Text, Dimensions, StyleSheet, Image}
 
 import Logo from '../assets/SuccessImage.png';
 
-export default function SplashScreen() {
+export default function Success(props) {
+  const navigateToHome = () => {
+    props.navigation.navigate('Home');
+  };
+
   return (
       <ScrollView contentContainerStyle={styles.parent}>
         <View style={styles.header}>
@@ -15,7 +19,7 @@ export default function SplashScreen() {
           <Text style={styles.textTitle}>
             Thank you for choosing our app!
           </Text>
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity style={styles.btn} onPress={navigateToHome}>
             <Text style={styles.btnText}>Continue shopping</Text>
           </TouchableOpacity>
         </View>

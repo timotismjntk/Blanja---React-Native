@@ -3,7 +3,7 @@ const initialState = {
   isError: false,
   alertMsg: '',
   isLoading: true,
-  info: {},
+  data: [],
   quantity: 1,
   totalSummary: 0,
   quantityCartFromDB: 0,
@@ -26,9 +26,9 @@ export default (state = initialState, action) => {
         isLoading: false,
         isError: true,
         alertMsg: action.payload.response.data.error,
-        info: {},
         totalSummary: 0,
         isDelete: false,
+        data:[],
       };
     }
     case 'GET_CART_FULFILLED': {
@@ -36,15 +36,14 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        info: action.payload.data.readChart,
-        totalSummary: action.payload.data.summary,
+        data: action.payload.data.results,
+        totalSummary: action.payload.data.totalSummary,
       };
     }
     case 'POST_CART_PENDING': {
       return {
         ...state,
         isLoading: true,
-        info: {},
       };
     }
     case 'POST_CART_REJECTED': {
@@ -52,7 +51,6 @@ export default (state = initialState, action) => {
         ...state,
         isLoading: false,
         isError: true,
-        info: {},
         alertMsg: action.payload.response.data.message,
       };
     }
@@ -61,7 +59,7 @@ export default (state = initialState, action) => {
         ...state,
         isLoading: false,
         alertMsg: 'Success',
-        // info:{},
+        // data:[],
         isAdded: true,
         quantity: 1,
       };
@@ -107,7 +105,6 @@ export default (state = initialState, action) => {
         isLoading: false,
         alertMsg: 'Success',
         quantityCartFromDB: 'tes',
-        info: {},
         isDelete: true,
       };
     }

@@ -20,13 +20,15 @@ export default class SearchStack extends Component {
   }
   searchHandler = () =>{
     this.props.navigation.navigate('Shop', {
-      screen: 'ViewAll',
+      screen: 'Catalog',
       params: {
         id: 1,
         search: this.state.searchValue,
+        categoryName: '',
       },
     });
-};
+    console.log(this.state.searchValue);
+  };
   render() {
     return (
       <Stack.Navigator>
@@ -44,7 +46,13 @@ export default class SearchStack extends Component {
                  <TouchableOpacity onPress={this.searchHandler}>
                    <Icon name="search" size={18} color="grey" />
                  </TouchableOpacity>
-                 <TextInput value={this.state.searchValue} onChangeText={(text)=>{this.setState({searchValue: text})}} placeholder="Search" style={{width: '100%', paddingLeft: 10}} />
+                 <TextInput
+                  value={this.state.searchValue}
+                  onChangeText={(text)=>{this.setState({searchValue: text});}}
+                  placeholder="Search"
+                  autoFocus={true}
+                  onSubmitEditing={this.searchHandler}
+                  style={{width: '100%', paddingLeft: 10}} />
                    </View>),
               headerTitleAlign: 'center',
           }}

@@ -23,7 +23,9 @@ export default class Home extends Component {
           </View>
           <View style={styles.slider}>
             <NewProduct />
-            <PopularProduct />
+            <View style={{marginTop: 40}}>
+              <PopularProduct />
+            </View>
           </View>
         </SafeAreaView>
       </ScrollView>

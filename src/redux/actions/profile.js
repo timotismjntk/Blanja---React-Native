@@ -27,6 +27,12 @@ export default {
       payload: http(token).patch('manage/users', qs.stringify(data)),
     };
   },
+  resetPassword: (data) => {
+    return {
+      type: 'RESET_PASSWORD',
+      payload: http().patch('profile/reset', qs.stringify(data)),
+    };
+  },
   uploadProfileImage: (token, data) => {
     return {
       type: 'PATCH_PROFILE_IMAGE',

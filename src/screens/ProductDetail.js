@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   View,
@@ -9,8 +9,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import Carousel from 'react-native-snap-carousel';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {BottomSheet, RadioButton} from 'react-native-btr';
 import Toast from 'react-native-root-toast';
 
@@ -24,22 +23,12 @@ import cartAction from '../redux/actions/cart';
 
 // Import image
 import Line from '../assets/line.png';
-import ProductDetailImage from '../assets/productDetail.png';
 
 // import env
 import {API_URL} from '@env';
 
 // import helpers
 import convertToRupiah from '../helpers/rupiahConverter';
-
-// const renderItem = ({item, index}) => {
-//     // console.log(item);
-//     return (
-//         <View style={styles.card}>
-//             <Image style={styles.image} source={{uri: API_URL + item.url}} />
-//         </View>
-//     );
-// };
 
 export default function ProductDetail({route, navigation}) {
   const [visibleSizing, setVisibleSizing] = useState(false);
@@ -52,10 +41,6 @@ export default function ProductDetail({route, navigation}) {
   const [message, setMessage] = useState('');
   const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    selectedSize.length && Alert.alert(selectedSize);
-  }, [selectedSize]);
 
   const toggleBottomModalSizing = () => {
     setVisibleSizing(!visibleSizing);
@@ -91,20 +76,29 @@ export default function ProductDetail({route, navigation}) {
 
   const {id, title} = route.params;
 
+  const scrollRef = useRef(); // ref to make scroll to top
+
   useEffect(() => {
-    dispatch(getDetailProductIdAction.getDetailProducts(id));
-    navigation.setOptions({headerTitle: title});
-  }, [dispatch, id, navigation, title]);
+    if (id) {
+      scrollRef.current.scrollTo({
+        y: 0,
+        animated: true,
+      });
+      dispatch(getDetailProductIdAction.getDetailProducts(id));
+      navigation.setOptions({headerTitle: title});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const {token} = useSelector((state) => state.auth);
   const quantityState = useSelector((state) => state.cart);
   const {quantity, isAdded, info, isError, alertMsg} = quantityState;
   const productState = useSelector((state) => state.detailproduct);
   const {data, price} = productState;
+  const [submitting, setSubmitting] = useState(false);
 
   const createCart = (e) => {
-    e.preventDefault();
-    // alert(quantity)
+    setSubmitting(true);
     let dataCart = {
       product_id: id,
       quantity,
@@ -127,25 +121,22 @@ export default function ProductDetail({route, navigation}) {
 
   useEffect(() => {
     if (isAdded) {
-      setMessage('Item added to cart successfully');
+      dispatch(cartAction.getCart(token));
       setVisible(true);
+      setMessage('Item added to cart successfully');
       setTimeout(() => {
         setVisible(false);
-        return dispatch(cartAction.clearMessage());
-      }, 5000);
+        setSubmitting(false);
+        dispatch(cartAction.clearMessage());
+      }, 400);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdded, dispatch]);
   return (
     <>
       {data ? (
         <>
-          <ScrollView>
-            {/* <Carousel
-                data={data}
-                renderItem={renderItem}
-                sliderWidth={500}
-                itemWidth={200}
-                /> */}
+          <ScrollView style={{marginBottom: 70}} ref={scrollRef}>
             <View style={styles.card}>
               <Image style={styles.image} source={{uri: API_URL + data.url}} />
             </View>
@@ -155,16 +146,16 @@ export default function ProductDetail({route, navigation}) {
                   onPress={toggleBottomModalSizing}
                   style={styles.btnSisCo}>
                   <Text>Size</Text>
-                  <Icon name="menu-down" size={20} />
+                  <Icon name="chevron-down" size={11} color="rgba(0,0,0,0.4)" />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={toggleBottomModalColor}
                   style={styles.btnSisCo}>
                   <Text>Color</Text>
-                  <Icon name="menu-down" size={20} />
+                  <Icon name="chevron-down" size={11} color="rgba(0,0,0,0.4)" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.btnHeart}>
-                  <Icon name="heart-outline" color={'grey'} size={15} />
+                  <Icon name="heart" color={'grey'} size={15} />
                 </TouchableOpacity>
               </View>
               <View style={styles.cardContainer}>
@@ -185,12 +176,20 @@ export default function ProductDetail({route, navigation}) {
               <View style={styles.infoContainer}>
                 <TouchableOpacity style={styles.sizeShipping}>
                   <Text style={styles.sizeShippingText}>Shipping info</Text>
-                  <Icon name="chevron-right" size={25} />
+                  <Icon
+                    name="chevron-right"
+                    size={18}
+                    color="rgba(0,0,0,0.4)"
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.sizeShipping, styles.sizeSupport]}>
                   <Text style={styles.sizeShippingText}>Support</Text>
-                  <Icon name="chevron-right" size={25} />
+                  <Icon
+                    name="chevron-right"
+                    size={18}
+                    color="rgba(0,0,0,0.4)"
+                  />
                 </TouchableOpacity>
                 <SuggestProduct />
               </View>
@@ -294,11 +293,18 @@ export default function ProductDetail({route, navigation}) {
                 </View>
               </View>
             </BottomSheet>
-            {/* < */}
           </ScrollView>
           <View style={styles.AddToCart}>
-            <TouchableOpacity style={styles.btnAddTocart} onPress={createCart}>
-              <Text style={styles.AddToCartText}>ADD TO CART</Text>
+            <TouchableOpacity
+              disabled={submitting}
+              style={[
+                styles.btnAddTocart,
+                submitting && {backgroundColor: 'grey'},
+              ]}
+              onPress={createCart}>
+              <Text style={styles.AddToCartText}>
+                {submitting ? 'Loading' : 'ADD TO CART'}
+              </Text>
             </TouchableOpacity>
           </View>
         </>
@@ -310,9 +316,7 @@ export default function ProductDetail({route, navigation}) {
         position={40}
         shadow={true}
         animation={true}
-        hideOnPress={true}
-        // textColor="yellow"
-      >
+        hideOnPress={true}>
         {message}
       </Toast>
     </>
@@ -514,7 +518,8 @@ const styles = StyleSheet.create({
     padding: 10,
     // paddingTop: 50,
     width: '100%',
-    top: 415,
+    // top: 415,
+    bottom: 0,
     justifyContent: 'center',
     zIndex: 2,
     position: 'absolute',
